@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Recruitment Chat Assistant — Status Progres</title>
+<meta name="description" content="Dashboard progres non-teknis untuk Recruitment Chat Assistant. Sumber data: status.json, disalin dari repo aplikasi tiap checkpoint." />
+<style>
+  :root {
+    --bg: #f7f7f8; --card: #ffffff; --border: #e3e3e6; --text: #1c1c1f; --muted: #6b6b73;
+    --accent: #2563eb; --green: #16a34a; --yellow: #ca8a04; --red: #dc2626; --purple: #7c3aed;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111114; --card: #1a1a1e; --border: #2c2c31; --text: #ececee; --muted: #9a9aa2;
+      --accent: #60a5fa; --green: #4ade80; --yellow: #facc15; --red: #f87171; --purple: #c4b5fd;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111114; --card: #1a1a1e; --border: #2c2c31; --text: #ececee; --muted: #9a9aa2;
+    --accent: #60a5fa; --green: #4ade80; --yellow: #facc15; --red: #f87171; --purple: #c4b5fd;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 16px; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  header { margin-bottom: 20px; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 0.9rem; }
+  .freshness { display: inline-block; margin-top: 8px; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; background: var(--card); border: 1px solid var(--border); }
+  .freshness.stale { color: var(--red); border-color: var(--red); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+  .phase-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; }
+  .phase-title { font-weight: 600; font-size: 1.02rem; }
+  .badge { font-size: 0.78rem; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; }
+  .badge.released { color: var(--purple); border-color: var(--purple); }
+  .badge.verified_live { color: var(--green); border-color: var(--green); }
+  .badge.in_progress { color: var(--yellow); border-color: var(--yellow); }
+  .badge.blocked, .badge.not_started { color: var(--muted); }
+  .summary { color: var(--muted); font-size: 0.9rem; margin: 6px 0 0; }
+  ul.results { list-style: none; margin: 12px 0 0; padding: 0; }
+  ul.results li { padding: 8px 0; border-top: 1px solid var(--border); font-size: 0.92rem; }
+  ul.results li:first-child { border-top: none; }
+  .r-label { font-weight: 500; }
+  .r-status { font-size: 0.78rem; color: var(--muted); }
+  .r-evidence { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+  details > summary { list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+  .chev { transition: transform 0.15s; color: var(--muted); }
+  details[open] .chev { transform: rotate(90deg); }
+  .section-title { font-size: 1rem; font-weight: 600; margin: 24px 0 8px; }
+  ul.plain { padding-left: 18px; margin: 0; font-size: 0.92rem; color: var(--text); }
+  ul.plain li { margin: 4px 0; }
+  footer { margin-top: 28px; color: var(--muted); font-size: 0.8rem; text-align: center; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="title">Recruitment Chat Assistant — Status Progres</h1>
+    <div class="sub" id="sub">Memuat…</div>
+    <div class="freshness" id="freshness"></div>
+  </header>
+  <main id="phases"></main>
+  <div id="openDecisions"></div>
+  <div id="nextSteps"></div>
+  <footer>
+    Data dari <code>status.json</code>, disalin dari repo aplikasi tiap checkpoint (bukan sambungan langsung).
+    Sumber: <a href="https://github.com/fukusya/recruitment-chat-assistant" target="_blank" rel="noopener">repo aplikasi</a>.
+  </footer>
+</div>
+<script>
+const ICON = { not_started: "⏳", in_progress: "🟡", blocked: "🔴", done_dev_tested_local: "🧪", verified_live: "✅", released: "🚀" };
+const LABEL = {
+  not_started: "Belum dikerjakan", in_progress: "Sedang dikerjakan", blocked: "Terhambat",
+  done_dev_tested_local: "Kode+test lulus, belum dicoba live", verified_live: "Terbukti live",
+  released: "Dipakai sehari-hari",
+};
+
+function relTime(iso) {
+  const then = new Date(iso).getTime();
+  const now = Date.now();
+  const diffMs = now - then;
+  const h = Math.floor(diffMs / 3600000);
+  if (h < 1) return "kurang dari 1 jam lalu";
+  if (h < 24) return h + " jam lalu";
+  const d = Math.floor(h / 24);
+  return d + " hari lalu";
+}
+
+async function load() {
+  let data;
+  try {
+    const res = await fetch("status.json", { cache: "no-store" });
+    data = await res.json();
+  } catch (e) {
+    document.getElementById("sub").textContent = "Gagal memuat status.json.";
+    return;
+  }
+  document.getElementById("sub").textContent = data.project + " — diperbarui " + relTime(data.updatedAt);
+  const ageMs = Date.now() - new Date(data.updatedAt).getTime();
+  const fresh = document.getElementById("freshness");
+  const stale = ageMs > 14 * 86400000;
+  fresh.textContent = stale ? "⚠️ Belum diperbarui lebih dari 14 hari" : "Data segar";
+  if (stale) fresh.classList.add("stale");
+
+  const phasesEl = document.getElementById("phases");
+  data.phases.forEach((p) => {
+    const done = p.results.filter((r) => r.status === "verified_live" || r.status === "released").length;
+    const total = p.results.length;
+    const card = document.createElement("div");
+    card.className = "card";
+    const resultsHtml = p.results.map((r) => `
+      <li>
+        <div class="r-label">${ICON[r.status] || ""} ${escapeHtml(r.label)} <span class="r-status">— ${LABEL[r.status]}</span></div>
+        <div class="r-evidence">${escapeHtml(r.evidence)}</div>
+      </li>`).join("");
+    card.innerHTML = `
+      <details>
+        <summary>
+          <div class="phase-head">
+            <div>
+              <span class="chev">▶</span>
+              <span class="phase-title">${ICON[p.status] || ""} ${escapeHtml(p.label)}</span>
+            </div>
+            <span class="badge ${p.status}">${done}/${total} hasil</span>
+          </div>
+        </summary>
+        <p class="summary">${escapeHtml(p.summary)}</p>
+        <ul class="results">${resultsHtml}</ul>
+      </details>`;
+    phasesEl.appendChild(card);
+  });
+
+  if (data.openDecisions && data.openDecisions.length) {
+    document.getElementById("openDecisions").innerHTML = `
+      <div class="section-title">Keputusan yang masih terbuka</div>
+      <ul class="plain">${data.openDecisions.map((d) => `<li>${escapeHtml(d)}</li>`).join("")}</ul>`;
+  }
+  if (data.nextSteps && data.nextSteps.length) {
+    document.getElementById("nextSteps").innerHTML = `
+      <div class="section-title">Langkah berikutnya</div>
+      <ul class="plain">${data.nextSteps.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>`;
+  }
+}
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+{
+  "project": "Recruitment Chat Assistant",
+  "repo": "https://github.com/fukusya/recruitment-chat-assistant",
+  "updatedAt": "2026-09-29T04:50:00+07:00",
+  "statusLegend": {
+    "not_started": "Belum dikerjakan",
+    "in_progress": "Sedang dikerjakan",
+    "blocked": "Terhambat / menunggu sesuatu",
+    "done_dev_tested_local": "Kode + test otomatis lulus, BELUM dicoba langsung/live",
+    "verified_live": "Sudah dicoba langsung (live/manual) dan terbukti benar",
+    "released": "Dipakai HR beneran sehari-hari"
+  },
+  "phases": [
+    {
+      "id": "v1",
+      "label": "V1 — Extension personal (baseline)",
+      "status": "released",
+      "weight": null,
+      "summary": "Sidebar WhatsApp Web personal Lathisya: Inbox, Reminders, Candidates, Interview, Templates, Backup. Dipakai sehari-hari.",
+      "results": [
+        { "id": "v1-sheet-sync", "label": "Sinkronisasi Google Sheet read-only", "status": "released", "evidence": "15 suite, 814 pemeriksaan, 0 gagal (historis)" },
+        { "id": "v1-inbox", "label": "Inbox Needs Attention (baca DOM WhatsApp, read-only)", "status": "released", "evidence": "Live read-only smoke test lulus" },
+        { "id": "v1-reminders", "label": "Assessment Reminders (kalender Asia/Jakarta)", "status": "released", "evidence": "Termasuk 814 pemeriksaan di atas" },
+        { "id": "v1-candidates", "label": "Candidates management (owner tunggal di service worker)", "status": "released", "evidence": "Termasuk 814 pemeriksaan di atas" },
+        { "id": "v1-interview", "label": "Interview composer", "status": "released", "evidence": "Termasuk 814 pemeriksaan di atas" },
+        { "id": "v1-templates", "label": "Templates + draft wa.me", "status": "released", "evidence": "Termasuk 814 pemeriksaan di atas" },
+        { "id": "v1-backup", "label": "Backup import/export (tervalidasi, tanpa kredensial)", "status": "released", "evidence": "Termasuk 814 pemeriksaan di atas" }
+      ]
+    },
+    {
+      "id": "v2-1",
+      "label": "V2-1 — Validasi dependency murah",
+      "status": "in_progress",
+      "weight": null,
+      "summary": "Conditional pass untuk mulai wireframe V2-2. Dua item belum selesai: auth Workspace dari extension asli (sekarang sudah terjawab lewat probe V2-3 Inc1, lihat catatan), dan diagnostic WhatsApp.",
+      "results": [
+        { "id": "v2-1-locking", "label": "Locking + idempotency (LockService, retry, race)", "status": "verified_live", "evidence": "Live test server Google asli: 15/15 berurutan, 3/3 bersamaan, retry opId sama = 1 alokasi, 0 kode ganda" },
+        { "id": "v2-1-pool-structure", "label": "Struktur code pool 2 role nyata (PM, QA)", "status": "verified_live", "evidence": "Cocok 100% dengan rencana, divalidasi langsung di template" },
+        { "id": "v2-1-auth-extension", "label": "Auth Google Workspace dari extension asli", "status": "verified_live", "evidence": "Terjawab lewat probe V2-3 Increment 1 (dua akun 10/10), bukan lewat V2-1 sendiri" },
+        { "id": "v2-1-whatsapp-diagnostic", "label": "Diagnostic DOM WhatsApp read-only", "status": "not_started", "evidence": "Script siap (docs/validation/V2-1_WHATSAPP_DIAGNOSTIC.md), belum dijalankan di WhatsApp Web asli" },
+        { "id": "v2-1-volume-200", "label": "Uji volume 200 write", "status": "in_progress", "evidence": "30 write kontinu + 15 alokasi berurutan terbukti; burst 8 aksi tidak andal; 200 penuh belum dicoba" }
+      ]
+    },
+    {
+      "id": "v2-2",
+      "label": "V2-2 — Wireframe & validasi UX",
+      "status": "verified_live",
+      "weight": null,
+      "summary": "Wireframe statis 4 tab dicoba di browser dan disetujui Lathisya.",
+      "results": [
+        { "id": "v2-2-wireframe", "label": "Wireframe 4 tab + walkthrough HR baru", "status": "verified_live", "evidence": "Dicoba di browser: alur 6 langkah, error/retry, queue, empty state, mobile 375px, dark mode, 0 console error. Disetujui Lathisya, commit 95dd128" }
+      ]
+    },
+    {
+      "id": "v2-3-inc1",
+      "label": "V2-3 Increment 1 — Identitas, akses, read API",
+      "status": "verified_live",
+      "weight": null,
+      "summary": "Demo live selesai di workbook TEST. Menunggu acceptance check Codex (langkah persetujuan, bukan verifikasi teknis).",
+      "results": [
+        { "id": "v2-3-1-setup", "label": "Setup plan/apply idempoten (kolom sistem, _OpsLog, _Tokens, proteksi)", "status": "verified_live", "evidence": "Dijalankan live di workbook TEST" },
+        { "id": "v2-3-1-protection", "label": "HR non-owner tidak bisa edit kolom sistem/token/assignment", "status": "verified_live", "evidence": "Dicoba akun Tievanto (editor): ditolak edit Role Assignments/ID/header, boleh edit Recruiter Notes" },
+        { "id": "v2-3-1-id-migration", "label": "Migrasi ID eksplisit, ID stabil setelah sort", "status": "verified_live", "evidence": "Migrasi live QA-A8D19A48, ID tidak berubah setelah sort" },
+        { "id": "v2-3-1-bootstrap-readonly", "label": "getBootstrap terbukti read-only", "status": "verified_live", "evidence": "Hash workbook sama sebelum/sesudah, 4 kali percobaan" },
+        { "id": "v2-3-1-auth-workspace", "label": "Auth Workspace 2 akun (termasuk Chrome multi-akun)", "status": "verified_live", "evidence": "Lathisya 10/10 (QA), Tievanto 10/10 (PM), 2.1-4.5 detik/panggilan" },
+        { "id": "v2-3-1-auth-token", "label": "Auth token per-HR (cadangan)", "status": "verified_live", "evidence": "Live: token benar diterima, salah AUTH_FORBIDDEN, kosong AUTH_REQUIRED, dicabut AUTH_REVOKED" },
+        { "id": "v2-3-1-emergency-transfer", "label": "Transfer darurat owner-only", "status": "verified_live", "evidence": "Role pindah, tercatat di _OpsLog" }
+      ]
+    },
+    {
+      "id": "v2-3-inc2",
+      "label": "V2-3 Increment 2 — Write-back aman",
+      "status": "in_progress",
+      "weight": null,
+      "summary": "Kode dan unit test (63 pemeriksaan) selesai lokal. Belum ada satu pun yang dicoba live di workbook TEST — menunggu satu izin gabungan (migrasi pool, redeploy, fault injection, smoke 30, uji log matang, uji 200 write).",
+      "results": [
+        { "id": "v2-3-2-write-ops", "label": "11 operasi write whitelist (stage, follow-up, reminder, alt phone, notes, soft-delete/restore, ganti kode, transfer role)", "status": "done_dev_tested_local", "evidence": "tests/v2-webapp-inc2.test.mjs — ditulis & CAS-diverifikasi lewat sheet tiruan" },
+        { "id": "v2-3-2-cas-ledger", "label": "CAS (expected) + ledger _OpsLog PENDING→APPLIED + fingerprint anti-konflik", "status": "done_dev_tested_local", "evidence": "Diuji: CAS gagal tidak menulis ledger, replay opId sama aman, opId dipakai ulang untuk payload beda ditolak" },
+        { "id": "v2-3-2-recovery", "label": "Recovery 3 titik fault injection (sebelum/tengah/sesudah mutasi)", "status": "done_dev_tested_local", "evidence": "Disimulasikan crash di 3 titik, semua pulih benar tanpa data dobel (unit test, BELUM live)" },
+        { "id": "v2-3-2-pool-sheet", "label": "Code pool pindah ke sheet terpisah per role", "status": "done_dev_tested_local", "evidence": "Kode migrasi (plan/apply) ditulis, BELUM dijalankan di workbook TEST asli" },
+        { "id": "v2-3-2-retention", "label": "Retention job (hapus log APPLIED > 180 hari)", "status": "done_dev_tested_local", "evidence": "Fungsi ditulis, belum dicoba live" },
+        { "id": "v2-3-2-client", "label": "Modul client (antrean, retry, opId)", "status": "done_dev_tested_local", "evidence": "13 pemeriksaan unit test; belum dipasang ke UI mana pun" },
+        { "id": "v2-3-2-smoke30", "label": "Smoke 30 write", "status": "not_started", "evidence": "Script siap (scripts/v2-inc2-load-test.ps1), belum dijalankan" },
+        { "id": "v2-3-2-mature-log", "label": "Uji performa log matang (±36.000 baris)", "status": "not_started", "evidence": "Fungsi pengisi data sintetis siap, belum dijalankan" },
+        { "id": "v2-3-2-load-200", "label": "Uji 200 write", "status": "not_started", "evidence": "Script siap, belum dijalankan" }
+      ]
+    }
+  ],
+  "openDecisions": [
+    "Acceptance check Codex untuk V2-3 Increment 1 (termasuk isu pool-vs-sort, sudah terjawab lewat keputusan pool-per-sheet di Increment 2).",
+    "Izin gabungan untuk menyentuh workbook/deployment TEST pada Increment 2 (migrasi pool, redeploy, fault injection, smoke 30, log matang, 200 write)."
+  ],
+  "nextSteps": [
+    "Migrasi code pool ke sheet terpisah (preview lalu apply) di workbook TEST.",
+    "Redeploy WebAppV2.gs versi Increment 2.",
+    "Jalankan fault injection 3 titik secara live dan buktikan recovery-nya.",
+    "Isi _OpsLog dengan ±36.000 baris sintetis, jalankan smoke 30 dan uji 200 write.",
+    "Diagnostic DOM WhatsApp read-only (butuh Lathisya buka WhatsApp Web asli)."
+  ]
+}
