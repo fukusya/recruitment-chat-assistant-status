@@ -1,154 +1,261 @@
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Recruitment Chat Assistant — Status Progres</title>
-<meta name="description" content="Dashboard progres non-teknis untuk Recruitment Chat Assistant. Sumber data: status.json, disalin dari repo aplikasi tiap checkpoint." />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Progres Recruitment Chat Assistant</title>
 <style>
-  :root {
-    --bg: #f7f7f8; --card: #ffffff; --border: #e3e3e6; --text: #1c1c1f; --muted: #6b6b73;
-    --accent: #2563eb; --green: #16a34a; --yellow: #ca8a04; --red: #dc2626; --purple: #7c3aed;
+:root {
+  --bg: #f6f7f9; --card: #ffffff; --ink: #14181f; --muted: #5d6675; --faint: #8b93a1; --line: #e3e6eb;
+  --accent: #b45309; --accent-soft: #fef3c7;
+  --ok: #15803d; --ok-soft: #dcfce7; --run: #1d4ed8; --run-soft: #dbeafe;
+  --todo: #525c6b; --todo-soft: #eef0f3; --block: #b91c1c; --block-soft: #fee2e2;
+  --dev: #a16207; --dev-soft: #fef9c3; --live: #0f766e; --live-soft: #ccfbf1;
+  --ask: #7c3aed; --ask-soft: #ede9fe; --warn: #92400e; --warn-soft: #fef3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1216; --card: #171b21; --ink: #e8ebf0; --muted: #a3acba; --faint: #7a8494; --line: #2a303a;
+    --accent: #f59e0b; --accent-soft: #3a2a0c;
+    --ok: #4ade80; --ok-soft: #12301d; --run: #7aa7ff; --run-soft: #172745;
+    --todo: #b3bcc9; --todo-soft: #232933; --block: #f87171; --block-soft: #3a1717;
+    --dev: #fbbf24; --dev-soft: #3a2f0c; --live: #5eead4; --live-soft: #0f2e2b;
+    --ask: #b79cff; --ask-soft: #2a2145; --warn: #fbbf24; --warn-soft: #3a2a0c;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #111114; --card: #1a1a1e; --border: #2c2c31; --text: #ececee; --muted: #9a9aa2;
-      --accent: #60a5fa; --green: #4ade80; --yellow: #facc15; --red: #f87171; --purple: #c4b5fd;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #111114; --card: #1a1a1e; --border: #2c2c31; --text: #ececee; --muted: #9a9aa2;
-    --accent: #60a5fa; --green: #4ade80; --yellow: #facc15; --red: #f87171; --purple: #c4b5fd;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 16px; }
-  .wrap { max-width: 760px; margin: 0 auto; }
-  header { margin-bottom: 20px; }
-  h1 { font-size: 1.4rem; margin: 0 0 4px; }
-  .sub { color: var(--muted); font-size: 0.9rem; }
-  .freshness { display: inline-block; margin-top: 8px; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; background: var(--card); border: 1px solid var(--border); }
-  .freshness.stale { color: var(--red); border-color: var(--red); }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-  .phase-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; }
-  .phase-title { font-weight: 600; font-size: 1.02rem; }
-  .badge { font-size: 0.78rem; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; }
-  .badge.released { color: var(--purple); border-color: var(--purple); }
-  .badge.verified_live { color: var(--green); border-color: var(--green); }
-  .badge.in_progress { color: var(--yellow); border-color: var(--yellow); }
-  .badge.blocked, .badge.not_started { color: var(--muted); }
-  .summary { color: var(--muted); font-size: 0.9rem; margin: 6px 0 0; }
-  ul.results { list-style: none; margin: 12px 0 0; padding: 0; }
-  ul.results li { padding: 8px 0; border-top: 1px solid var(--border); font-size: 0.92rem; }
-  ul.results li:first-child { border-top: none; }
-  .r-label { font-weight: 500; }
-  .r-status { font-size: 0.78rem; color: var(--muted); }
-  .r-evidence { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
-  details > summary { list-style: none; }
-  details > summary::-webkit-details-marker { display: none; }
-  .chev { transition: transform 0.15s; color: var(--muted); }
-  details[open] .chev { transform: rotate(90deg); }
-  .section-title { font-size: 1rem; font-weight: 600; margin: 24px 0 8px; }
-  ul.plain { padding-left: 18px; margin: 0; font-size: 0.92rem; color: var(--text); }
-  ul.plain li { margin: 4px 0; }
-  footer { margin-top: 28px; color: var(--muted); font-size: 0.8rem; text-align: center; }
-  a { color: var(--accent); }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1216; --card: #171b21; --ink: #e8ebf0; --muted: #a3acba; --faint: #7a8494; --line: #2a303a;
+  --accent: #f59e0b; --accent-soft: #3a2a0c;
+  --ok: #4ade80; --ok-soft: #12301d; --run: #7aa7ff; --run-soft: #172745;
+  --todo: #b3bcc9; --todo-soft: #232933; --block: #f87171; --block-soft: #3a1717;
+  --dev: #fbbf24; --dev-soft: #3a2f0c; --live: #5eead4; --live-soft: #0f2e2b;
+  --ask: #b79cff; --ask-soft: #2a2145; --warn: #fbbf24; --warn-soft: #3a2a0c;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 28px 16px 64px; }
+header.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; margin-bottom: 18px; }
+h1 { font-size: 26px; line-height: 1.2; margin: 0; letter-spacing: -0.01em; }
+.sub { color: var(--muted); margin: 4px 0 0; }
+.updated { font-size: 13px; color: var(--muted); text-align: right; }
+.updated b { color: var(--ink); }
+.stale { display: none; margin-top: 6px; font-size: 12.5px; background: var(--warn-soft); color: var(--warn); padding: 4px 10px; border-radius: 8px; }
+.release { border: 1px solid var(--line); background: var(--card); border-left: 4px solid var(--accent); border-radius: 12px; padding: 12px 16px; margin-bottom: 18px; }
+.release b { color: var(--accent); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.kpi .label { font-size: 12.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.kpi .num { font-size: 30px; font-weight: 750; margin: 4px 0 2px; font-variant-numeric: tabular-nums; }
+.kpi .num small { font-size: 16px; color: var(--faint); font-weight: 600; }
+.kpi .note { font-size: 13px; color: var(--muted); }
+.dots { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; }
+.dot { width: 14px; height: 14px; border-radius: 4px; background: var(--todo-soft); border: 1px solid var(--line); }
+.dot.blocked { background: var(--block); border-color: var(--block); }
+.dot.in_progress { background: var(--run); border-color: var(--run); }
+.dot.done_dev_tested_local { background: var(--dev); border-color: var(--dev); }
+.dot.verified_live { background: var(--ok); border-color: var(--ok); }
+.dot.released { background: var(--live); border-color: var(--live); }
+.pct-note { font-size: 13px; color: var(--muted); margin: -8px 0 18px; }
+.two { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; margin-bottom: 18px; }
+h2 { font-size: 17px; margin: 0 0 10px; }
+.summary { font-size: 16px; margin: 0 0 18px; }
+ul.clean { margin: 0; padding-left: 20px; }
+ul.clean li { margin: 4px 0; }
+.now h2 span { font-size: 12px; font-weight: 600; color: var(--run); background: var(--run-soft); padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: 2px; }
+.ask li::marker { color: var(--ask); }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; }
+.filters button { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--card); color: var(--muted); padding: 5px 12px; border-radius: 999px; cursor: pointer; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--card); border-color: var(--ink); }
+.mods { display: grid; gap: 8px; }
+details.mod { background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+details.mod summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 46px 1fr auto; gap: 12px; align-items: center; padding: 12px 16px; }
+details.mod summary::-webkit-details-marker { display: none; }
+.code { font-size: 11px; font-weight: 700; color: var(--faint); }
+.mname { font-weight: 650; }
+.mname small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; }
+.badge { font-size: 12px; font-weight: 650; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.b-blocked { background: var(--block-soft); color: var(--block); }
+.b-in_progress { background: var(--run-soft); color: var(--run); }
+.b-not_started { background: var(--todo-soft); color: var(--todo); }
+.b-done_dev_tested_local { background: var(--dev-soft); color: var(--dev); }
+.b-verified_live { background: var(--ok-soft); color: var(--ok); }
+.b-released { background: var(--live-soft); color: var(--live); }
+.mbody { padding: 0 16px 16px 74px; color: var(--muted); font-size: 14px; }
+.mbody p { margin: 0 0 6px; }
+.shots { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.shots figure { margin: 0; width: 240px; }
+.shots img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border: 1px solid var(--line); border-radius: 8px; display: block; cursor: zoom-in; background: #fff; }
+.shots figcaption { font-size: 12px; color: var(--faint); margin-top: 4px; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.gallery figure { margin: 0; }
+.gallery img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border: 1px solid var(--line); border-radius: 10px; display: block; cursor: zoom-in; background: #fff; }
+.gallery figcaption { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+.section { margin: 26px 0 0; }
+.legend { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; }
+footer { margin-top: 36px; font-size: 12.5px; color: var(--faint); border-top: 1px solid var(--line); padding-top: 14px; }
+dialog { border: none; padding: 0; max-width: 96vw; max-height: 92vh; background: transparent; }
+dialog img { max-width: 96vw; max-height: 88vh; border-radius: 10px; display: block; }
+dialog::backdrop { background: rgba(0,0,0,.7); }
+.err { color: var(--block); }
+@media (max-width: 760px) {
+  .grid3, .two { grid-template-columns: 1fr; }
+  details.mod summary { grid-template-columns: 1fr auto; }
+  .code { display: none; }
+  .mbody { padding: 0 16px 16px; }
+  .updated { text-align: left; }
+  .shots figure { width: 100%; }
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1 id="title">Recruitment Chat Assistant — Status Progres</h1>
-    <div class="sub" id="sub">Memuat…</div>
-    <div class="freshness" id="freshness"></div>
+  <header class="top">
+    <div>
+      <h1 id="proyek">Progres</h1>
+      <p class="sub">Laporan progres untuk Lathisya · bahasa non-teknis</p>
+    </div>
+    <div class="updated">Pembaruan terakhir: <b id="updated"></b><br><span id="by"></span>
+      <div class="stale" id="stale"></div>
+    </div>
   </header>
-  <main id="phases"></main>
-  <div id="openDecisions"></div>
-  <div id="nextSteps"></div>
-  <footer>
-    Data dari <code>status.json</code>, disalin dari repo aplikasi tiap checkpoint (bukan sambungan langsung).
-    Sumber: <a href="https://github.com/fukusya/recruitment-chat-assistant" target="_blank" rel="noopener">repo aplikasi</a>.
-  </footer>
+
+  <div class="release" id="release"></div>
+  <p class="summary" id="ringkasan"></p>
+
+  <div class="grid3" id="kpi-wrap"></div>
+  <p class="pct-note" id="pct"></p>
+
+  <div class="two">
+    <div class="card now"><h2>Sedang dikerjakan <span>aktif</span></h2><p id="now-t" style="margin:0 0 4px;font-weight:650"></p><p id="now-d" style="margin:0;color:var(--muted)"></p></div>
+    <div class="card"><h2>Keputusan yang dibutuhkan</h2><ul class="clean ask" id="ask"></ul></div>
+  </div>
+
+  <div class="two">
+    <div class="card"><h2>Kendala</h2><ul class="clean" id="kendala"></ul></div>
+    <div class="card"><h2>Langkah berikutnya</h2><ol class="clean" id="next" style="padding-left:20px"></ol></div>
+  </div>
+
+  <section class="section">
+    <h2>Semua hasil</h2>
+    <div class="filters" id="filters"></div>
+    <div class="mods" id="mods"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section class="section">
+    <h2>Bukti tampilan</h2>
+    <p class="sub" style="margin:-4px 0 12px">Screenshot hanya ditambahkan kalau memang sudah ada — kosong berarti belum ada bukti visual untuk hasil ini.</p>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <footer id="foot">Laporan ini diperbarui oleh agen pengembang saat checkpoint — tidak realtime. Lihat waktu "Pembaruan terakhir" di atas. Sumber data disalin otomatis dari <code>status.json</code> di <a href="https://github.com/fukusya/recruitment-chat-assistant" target="_blank" rel="noopener">repo aplikasi</a>, bukan diedit manual di sini.</footer>
 </div>
+<dialog id="zoom"><img alt=""></dialog>
+
 <script>
-const ICON = { not_started: "⏳", in_progress: "🟡", blocked: "🔴", done_dev_tested_local: "🧪", verified_live: "✅", released: "🚀" };
-const LABEL = {
-  not_started: "Belum dikerjakan", in_progress: "Sedang dikerjakan", blocked: "Terhambat",
-  done_dev_tested_local: "Kode+test lulus, belum dicoba live", verified_live: "Terbukti live",
-  released: "Dipakai sehari-hari",
-};
+(async () => {
+const $ = (id) => document.getElementById(id);
+const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-function relTime(iso) {
-  const then = new Date(iso).getTime();
-  const now = Date.now();
-  const diffMs = now - then;
-  const h = Math.floor(diffMs / 3600000);
-  if (h < 1) return "kurang dari 1 jam lalu";
-  if (h < 24) return h + " jam lalu";
-  const d = Math.floor(h / 24);
-  return d + " hari lalu";
+let S;
+try {
+  const res = await fetch("status.json", { cache: "no-store" });
+  S = await res.json();
+} catch (e) {
+  document.querySelector(".wrap").innerHTML = '<p class="err">Gagal memuat status.json. Coba muat ulang halaman.</p>';
+  return;
 }
 
-async function load() {
-  let data;
-  try {
-    const res = await fetch("status.json", { cache: "no-store" });
-    data = await res.json();
-  } catch (e) {
-    document.getElementById("sub").textContent = "Gagal memuat status.json.";
-    return;
-  }
-  document.getElementById("sub").textContent = data.project + " — diperbarui " + relTime(data.updatedAt);
-  const ageMs = Date.now() - new Date(data.updatedAt).getTime();
-  const fresh = document.getElementById("freshness");
-  const stale = ageMs > 14 * 86400000;
-  fresh.textContent = stale ? "⚠️ Belum diperbarui lebih dari 14 hari" : "Data segar";
-  if (stale) fresh.classList.add("stale");
-
-  const phasesEl = document.getElementById("phases");
-  data.phases.forEach((p) => {
-    const done = p.results.filter((r) => r.status === "verified_live" || r.status === "released").length;
-    const total = p.results.length;
-    const card = document.createElement("div");
-    card.className = "card";
-    const resultsHtml = p.results.map((r) => `
-      <li>
-        <div class="r-label">${ICON[r.status] || ""} ${escapeHtml(r.label)} <span class="r-status">— ${LABEL[r.status]}</span></div>
-        <div class="r-evidence">${escapeHtml(r.evidence)}</div>
-      </li>`).join("");
-    card.innerHTML = `
-      <details>
-        <summary>
-          <div class="phase-head">
-            <div>
-              <span class="chev">▶</span>
-              <span class="phase-title">${ICON[p.status] || ""} ${escapeHtml(p.label)}</span>
-            </div>
-            <span class="badge ${p.status}">${done}/${total} hasil</span>
-          </div>
-        </summary>
-        <p class="summary">${escapeHtml(p.summary)}</p>
-        <ul class="results">${resultsHtml}</ul>
-      </details>`;
-    phasesEl.appendChild(card);
-  });
-
-  if (data.openDecisions && data.openDecisions.length) {
-    document.getElementById("openDecisions").innerHTML = `
-      <div class="section-title">Keputusan yang masih terbuka</div>
-      <ul class="plain">${data.openDecisions.map((d) => `<li>${escapeHtml(d)}</li>`).join("")}</ul>`;
-  }
-  if (data.nextSteps && data.nextSteps.length) {
-    document.getElementById("nextSteps").innerHTML = `
-      <div class="section-title">Langkah berikutnya</div>
-      <ul class="plain">${data.nextSteps.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>`;
-  }
+const BULAN_PENDEK = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+function weekOfMonth(d) {
+  const day = d.getDate();
+  if (day <= 7) return 1;
+  if (day <= 14) return 2;
+  if (day <= 21) return 3;
+  if (day <= 28) return 4;
+  return 5;
+}
+function weekLabel(d) { return `W${weekOfMonth(d)} ${BULAN_PENDEK[d.getMonth()]}`; }
+function freshnessText(d) {
+  const mins = Math.floor((Date.now() - d.getTime()) / 6e4);
+  if (mins < 1) return "baru saja";
+  if (mins < 60) return `${mins} menit lalu`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs} jam lalu`;
+  const days = Math.floor(hrs / 24);
+  return `${days} hari lalu`;
 }
 
-function escapeHtml(s) {
-  return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-}
+const LABEL = S.statusLabel;
+const upd = new Date(S.diperbarui);
+$("proyek").textContent = "Progres " + S.proyek;
+$("updated").innerHTML = `${weekLabel(upd)} <span style="font-weight:400;color:var(--muted)">(${esc(freshnessText(upd))}, dihitung saat halaman dibuka — bukan realtime)</span>`;
+$("by").textContent = "oleh " + S.diperbaruiOleh + " · W = minggu dalam bulan (W1=tgl 1-7 ... W5=29-akhir bulan)";
+const hoursOld = (Date.now() - upd.getTime()) / 36e5;
+if (hoursOld > 336) { $("stale").style.display = "block"; $("stale").textContent = `Belum diperbarui ${Math.floor(hoursOld / 24)} hari — status mungkin sudah usang.`; }
+$("release").innerHTML = `<b>${esc(S.ringkasanStatus.judul)}</b><br>${esc(S.ringkasanStatus.teks)}`;
+$("ringkasan").textContent = S.ringkasan;
 
-load();
+const H = S.hasil;
+const doneSet = new Set(["verified_live", "released"]);
+const done = (arr) => arr.filter((h) => doneSet.has(h.status)).length;
+const dotsHtml = (arr) => arr.map((h) => `<span class="dot ${h.status}" title="${esc(h.kode + " · " + h.nama + " — " + LABEL[h.status])}"></span>`).join("");
+
+const kpiHtml = S.kpi.map((k) => {
+  const items = H.filter((h) => k.kelompok.includes(h.kelompok));
+  return `<div class="card kpi"><div class="label">${esc(k.label)}</div><div class="num">${done(items)} <small>/ ${items.length} hasil</small></div><div class="note">hasil terbukti live atau dipakai sehari-hari</div><div class="dots">${dotsHtml(items)}</div></div>`;
+}).join("") + `<div class="card kpi"><div class="label">Perlu keputusan</div><div class="num">${S.keputusanDibutuhkan.length}</div><div class="note">keputusan dari Lathisya yang ditunggu</div></div>`;
+$("kpi-wrap").innerHTML = kpiHtml;
+$("pct").textContent = S.persentase.disetujui ? "" : S.persentase.catatan;
+
+$("now-t").textContent = S.sedangDikerjakan.judul;
+$("now-d").textContent = S.sedangDikerjakan.detail + (S.sedangDikerjakan.mulai ? ` (mulai ${weekLabel(new Date(S.sedangDikerjakan.mulai))} — masih berjalan, belum ada tanggal selesai)` : "");
+$("ask").innerHTML = S.keputusanDibutuhkan.map((k) => `<li>${esc(k)}</li>`).join("");
+$("kendala").innerHTML = S.kendala.map((k) => `<li><b>${esc(k.judul)}.</b> ${esc(k.detail)}</li>`).join("") || "<li>Tidak ada.</li>";
+$("next").innerHTML = S.langkahBerikutnya.map((k) => `<li>${esc(k)}</li>`).join("");
+
+const STATUS_KEYS = S.statusOrder || Object.keys(LABEL);
+const FILTERS = [["semua", "Semua"], ...STATUS_KEYS.map((k) => [k, LABEL[k]])];
+let current = "semua";
+function renderMods() {
+  const list = H.filter((h) => current === "semua" || h.status === current);
+  $("mods").innerHTML = list.map((h) => `
+    <details class="mod">
+      <summary>
+        <span class="code">${esc(h.kode)}</span>
+        <span class="mname">${esc(h.nama)}<small>${esc(h.kelompok)}${h.tanggal ? " · " + esc(weekLabel(new Date(h.tanggal))) : ""}</small></span>
+        <span class="badge b-${h.status}">${esc(LABEL[h.status])}</span>
+      </summary>
+      <div class="mbody">
+        <p>${esc(h.manfaat)}</p>
+        ${h.catatan ? `<p><i>${esc(h.catatan)}</i></p>` : ""}
+        ${h.bukti && h.bukti.length ? `<div class="shots">${h.bukti.map((b) => `<figure><img src="${esc(b.file)}" alt="${esc(b.ket)}" loading="lazy"><figcaption>${esc(b.ket)}</figcaption></figure>`).join("")}</div>` : ""}
+      </div>
+    </details>`).join("") || `<p class="sub">Tidak ada hasil di kategori ini.</p>`;
+}
+$("filters").innerHTML = FILTERS.map(([k, t]) => {
+  const n = k === "semua" ? H.length : H.filter((h) => h.status === k).length;
+  return `<button data-k="${k}" aria-pressed="${k === current}">${esc(t)} (${n})</button>`;
+}).join("");
+$("filters").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  current = b.dataset.k;
+  for (const x of $("filters").children) x.setAttribute("aria-pressed", String(x === b));
+  renderMods();
+});
+renderMods();
+
+const defs = S.statusDefinisi || {};
+$("legend").innerHTML = Object.keys(defs).map((k) => `<span><b>${esc(LABEL[k])}</b> = ${esc(defs[k])}</span>`).join("");
+
+const shots = H.flatMap((h) => (h.bukti || []).map((b) => `<figure><img src="${esc(b.file)}" alt="${esc(b.ket)}" loading="lazy"><figcaption><b>${esc(h.kode)}</b> · ${esc(b.ket)}</figcaption></figure>`));
+$("gallery").innerHTML = shots.join("") || '<p class="sub">Belum ada screenshot yang ditambahkan.</p>';
+document.addEventListener("click", (e) => {
+  const img = e.target.closest("img"); if (!img || img.closest("dialog")) { if (e.target.closest("dialog")) $("zoom").close(); return; }
+  $("zoom").querySelector("img").src = img.src; $("zoom").showModal();
+});
+})();
 </script>
 </body>
 </html>
