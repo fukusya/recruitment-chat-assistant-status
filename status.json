@@ -1,6 +1,6 @@
 {
   "proyek": "Recruitment Chat Assistant",
-  "diperbarui": "2026-09-29T06:00:00+07:00",
+  "diperbarui": "2026-09-29T10:00:00+07:00",
   "diperbaruiOleh": "Claude (publikasi laporan)",
   "repoAplikasi": "https://github.com/fukusya/recruitment-chat-assistant",
   "ringkasanStatus": {
@@ -14,6 +14,13 @@
     "mulai": "2026-09-29"
   },
   "persentase": { "disetujui": false, "catatan": "Yang ditampilkan di bawah adalah JUMLAH hasil per status, bukan persentase resmi." },
+  "yangBisaDitunjukkan": [
+    "Baseline extension (V1) sudah dibangun dan lulus sign-off pengujian otomatis.",
+    "Alur produk baru V2 (4 area: Inbox, Reminders, Candidates, Message Builder) sudah disetujui lewat wireframe — lihat screenshot di bawah.",
+    "Login multi-HR dan pembagian role per HR sudah terbukti live di workbook TEST (Increment 1).",
+    "ID kandidat yang stabil dan perlindungan data teknis sudah terbukti live di workbook TEST (Increment 1).",
+    "Fitur simpan-ke-Sheet yang aman (Increment 2) masih menunggu live test — belum boleh diklaim selesai."
+  ],
   "kpi": [
     { "id": "v1", "label": "Baseline V1", "kelompok": ["v1"] },
     { "id": "v2-fondasi", "label": "Fondasi V2 (identitas, akses, simpan aman)", "kelompok": ["v2-1", "v2-2", "v2-3-inc1", "v2-3-inc2"] },
@@ -49,7 +56,12 @@
     { "id": "v2-1-whatsapp-diagnostic", "kode": "V2-1", "nama": "Diagnostic DOM WhatsApp read-only", "manfaat": "Tahu nomor/JID mana yang bisa diandalkan untuk mencocokkan chat ke kandidat.", "kelompok": "v2-1", "status": "not_started", "catatan": "Script sudah siap. Dijadwalkan bersama Lathisya saat mulai masuk gate V2-6 (Inbox matching) — bukan blocker untuk V2-3.", "bukti": [] },
     { "id": "v2-1-volume-200", "kode": "V2-1", "nama": "Uji volume 200 write (draft awal)", "manfaat": "Membuktikan server tidak macet kalau dipakai banyak HR sekaligus.", "kelompok": "v2-1", "status": "in_progress", "tanggal": "2026-09-27", "catatan": "30 write kontinu + 15 alokasi berurutan terbukti; burst 8 aksi tidak andal. Digantikan uji 200 write versi Increment 2 yang lebih lengkap.", "bukti": [] },
 
-    { "id": "v2-2-wireframe", "kode": "V2-2", "nama": "Wireframe 4 tab + walkthrough HR baru", "manfaat": "Lathisya bisa membayangkan alur pakai sebelum kode ditulis, jadi revisi besar tidak terjadi belakangan.", "kelompok": "v2-2", "status": "verified_live", "tanggal": "2026-09-28", "catatan": "Dicoba di browser: alur 6 langkah, error/retry, queue, empty state, mobile 375px, dark mode, 0 console error. Disetujui Lathisya.", "bukti": [] },
+    { "id": "v2-2-wireframe", "kode": "V2-2", "nama": "Wireframe 4 tab + walkthrough HR baru", "manfaat": "Lathisya bisa membayangkan alur pakai sebelum kode ditulis, jadi revisi besar tidak terjadi belakangan.", "kelompok": "v2-2", "status": "verified_live", "tanggal": "2026-09-28", "catatan": "Dicoba di browser: alur 6 langkah, error/retry, queue, empty state, mobile 375px, dark mode, 0 console error. Disetujui Lathisya. Wireframe V2 yang sudah disetujui — belum runtime extension final; semua nama/nomor di screenshot adalah data contoh.", "bukti": [
+      { "file": "assets/progress/v2-wireframe-inbox.jpg", "ket": "Wireframe V2 — tab Inbox: status Matched/Alternate number/Possible match (data contoh)" },
+      { "file": "assets/progress/v2-wireframe-reminders.jpg", "ket": "Wireframe V2 — tab Reminders: daftar follow-up hari ini (data contoh)" },
+      { "file": "assets/progress/v2-wireframe-candidate-detail.jpg", "ket": "Wireframe V2 — detail kandidat: nomor utama & alternatif (data contoh)" },
+      { "file": "assets/progress/v2-wireframe-message-builder.jpg", "ket": "Wireframe V2 — Message Builder: pilih template & nomor tujuan (data contoh)" }
+    ] },
 
     { "id": "v2-3-1-setup", "kode": "Inc1", "nama": "Setup plan/apply idempoten", "manfaat": "Workbook TEST disiapkan (kolom sistem, log, token, proteksi) tanpa risiko dijalankan dua kali.", "kelompok": "v2-3-inc1", "status": "verified_live", "tanggal": "2026-09-29", "bukti": [] },
     { "id": "v2-3-1-protection", "kode": "Inc1", "nama": "HR non-owner tidak bisa edit kolom sistem/token/assignment", "manfaat": "HR biasa tidak bisa merusak data teknis walau salah klik.", "kelompok": "v2-3-inc1", "status": "verified_live", "tanggal": "2026-09-29", "catatan": "Dicoba akun editor kedua: ditolak edit Role Assignments/ID/header, boleh edit Recruiter Notes.", "bukti": [] },

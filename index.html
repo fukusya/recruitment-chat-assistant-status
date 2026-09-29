@@ -123,6 +123,8 @@ dialog::backdrop { background: rgba(0,0,0,.7); }
   <div class="release" id="release"></div>
   <p class="summary" id="ringkasan"></p>
 
+  <div class="card" id="bisa-tunjuk-wrap" style="margin-bottom:18px"></div>
+
   <div class="grid3" id="kpi-wrap"></div>
   <p class="pct-note" id="pct"></p>
 
@@ -196,6 +198,11 @@ const hoursOld = (Date.now() - upd.getTime()) / 36e5;
 if (hoursOld > 336) { $("stale").style.display = "block"; $("stale").textContent = `Belum diperbarui ${Math.floor(hoursOld / 24)} hari — status mungkin sudah usang.`; }
 $("release").innerHTML = `<b>${esc(S.ringkasanStatus.judul)}</b><br>${esc(S.ringkasanStatus.teks)}`;
 $("ringkasan").textContent = S.ringkasan;
+if (S.yangBisaDitunjukkan && S.yangBisaDitunjukkan.length) {
+  $("bisa-tunjuk-wrap").innerHTML = `<h2>✅ Yang bisa ditunjukkan sekarang</h2><ul class="clean">${S.yangBisaDitunjukkan.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`;
+} else {
+  $("bisa-tunjuk-wrap").style.display = "none";
+}
 
 const H = S.hasil;
 const doneSet = new Set(["verified_live", "released"]);
