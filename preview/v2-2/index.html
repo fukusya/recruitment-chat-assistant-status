@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V2 Wireframe</title>
+<!--
+  V2-2 wireframe — static, sample data only.
+  Not loaded by manifest.json. Does not call Apps Script, Google Sheets, or WhatsApp.
+  Every "save to Sheet" and "open WhatsApp" below is a simulation inside this page.
+-->
+<style>
+:root {
+  --bg: #fbfaf7;
+  --surface: #fff;
+  --ink: #1c2321;
+  --ink-soft: #5a625e;
+  --line: #e4e1d8;
+  --accent: #0f6e5c;
+  --accent-ink: #0b4a3e;
+  --accent-bg: #e3f1ed;
+  --warn: #a96d14;
+  --warn-bg: #fbf0dc;
+  --danger: #b3261e;
+  --danger-bg: #fbe6e4;
+  --muted-bg: #f2f0ea;
+  --wa-bg: #efeae2;
+  --wa-panel: #f7f5f1;
+  --shadow: 0 6px 24px rgba(0,0,0,.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151a; --surface: #1a2027; --ink: #e7eae7; --ink-soft: #9ba4a0;
+    --line: #2d363e; --accent: #4fbfa6; --accent-ink: #93dacb; --accent-bg: #173630;
+    --warn: #d69a4c; --warn-bg: #3a2d17; --danger: #ef8a82; --danger-bg: #3d1f1d;
+    --muted-bg: #20272e; --wa-bg: #0b141a; --wa-panel: #111b21; --shadow: 0 6px 24px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151a; --surface: #1a2027; --ink: #e7eae7; --ink-soft: #9ba4a0;
+  --line: #2d363e; --accent: #4fbfa6; --accent-ink: #93dacb; --accent-bg: #173630;
+  --warn: #d69a4c; --warn-bg: #3a2d17; --danger: #ef8a82; --danger-bg: #3d1f1d;
+  --muted-bg: #20272e; --wa-bg: #0b141a; --wa-panel: #111b21; --shadow: 0 6px 24px rgba(0,0,0,.5);
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 13px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+  display: flex; flex-direction: column;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .5; }
+a { color: var(--accent-ink); }
+
+/* ---------- Demo guide (for the reviewer, not part of the product) ---------- */
+.demo {
+  background: #22302c; color: #eef3f1; padding: 8px 14px;
+  display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+}
+.demo b { font-weight: 600; }
+.demo .tag { background: #f3c969; color: #2b2208; border-radius: 4px; padding: 1px 6px; font-size: 11px; font-weight: 700; }
+.steps { display: flex; gap: 4px; flex-wrap: wrap; }
+.steps button {
+  border: 1px solid #4b5c57; background: transparent; color: #cfd9d5;
+  border-radius: 999px; padding: 2px 10px; font-size: 12px;
+}
+.steps button.done { background: #2f5a4f; border-color: #2f5a4f; color: #fff; }
+.steps button.now { background: #f3c969; border-color: #f3c969; color: #2b2208; font-weight: 600; }
+.demo .next { flex: 1 1 260px; color: #f3c969; }
+.demo label { font-size: 12px; color: #cfd9d5; display: inline-flex; gap: 4px; align-items: center; }
+.demo .ctl { display: flex; gap: 12px; flex-wrap: wrap; }
+.demo .ctl button { background: transparent; border: 1px solid #4b5c57; color: #cfd9d5; border-radius: 4px; padding: 1px 8px; font-size: 12px; }
+
+/* ---------- Layout ---------- */
+.stage { flex: 1; display: flex; min-height: 0; }
+.wa { flex: 1; display: flex; min-width: 0; background: var(--wa-bg); }
+.side {
+  width: 380px; flex: none; background: var(--bg); border-left: 1px solid var(--line);
+  display: flex; flex-direction: column; min-height: 0; position: relative;
+}
+@media (max-width: 820px) {
+  .stage { flex-direction: column; }
+  .wa { min-height: 260px; }
+  .side { width: 100%; border-left: 0; border-top: 1px solid var(--line); }
+  .wa-list { display: none; }
+}
+
+/* ---------- Fake WhatsApp ---------- */
+.wa-list { width: 270px; background: var(--wa-panel); border-right: 1px solid var(--line); overflow: auto; }
+.wa-list h3 { margin: 0; padding: 12px; font-size: 14px; }
+.wa-row { padding: 8px 12px; border-top: 1px solid var(--line); }
+.wa-row .n { font-weight: 600; }
+.wa-row .s { color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wa-chat { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.wa-head { background: var(--wa-panel); padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: 600; }
+.wa-body { flex: 1; padding: 16px; overflow: auto; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+.wa-empty { margin: auto; text-align: center; color: var(--ink-soft); max-width: 320px; }
+.bubble { background: var(--surface); padding: 6px 10px; border-radius: 8px; max-width: 70%; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+.wa-compose { background: var(--wa-panel); padding: 10px; border-top: 1px solid var(--line); }
+.wa-compose .box {
+  background: var(--surface); border: 2px dashed var(--accent); border-radius: 8px;
+  padding: 8px 10px; white-space: pre-wrap;
+}
+.wa-compose .note { color: var(--ink-soft); font-size: 12px; margin-top: 6px; }
+
+/* ---------- Sidebar chrome ---------- */
+.bar { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--line); background: var(--surface); }
+.bar .title { font-weight: 700; flex: 1; }
+.chip { font-size: 11px; border-radius: 999px; padding: 1px 8px; background: var(--muted-bg); color: var(--ink-soft); white-space: nowrap; }
+.chip.ok { background: var(--accent-bg); color: var(--accent-ink); }
+.chip.warn { background: var(--warn-bg); color: var(--warn); }
+.icon-btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+  width: 26px; height: 26px; display: inline-grid; place-items: center; font-weight: 700;
+  text-decoration: none; color: var(--accent-ink);
+}
+.tabs { display: flex; border-bottom: 1px solid var(--line); background: var(--surface); }
+.tabs button {
+  flex: 1; border: 0; background: none; padding: 9px 2px; color: var(--ink-soft);
+  border-bottom: 2px solid transparent; position: relative;
+}
+.tabs button.active { color: var(--accent-ink); border-bottom-color: var(--accent); font-weight: 600; }
+.tabs .count { background: var(--warn); color: #fff; border-radius: 999px; font-size: 10px; padding: 0 5px; margin-left: 3px; font-weight: 700; }
+main { flex: 1; overflow: auto; padding: 10px; }
+.helper { color: var(--ink-soft); margin: 0 0 10px; padding: 8px 10px; background: var(--muted-bg); border-radius: 6px; }
+.helper b { color: var(--ink); }
+
+/* ---------- Common blocks ---------- */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px; margin-bottom: 8px; }
+.card.dim { opacity: .6; }
+.card.focus { outline: 2px solid var(--accent); }
+.row-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.name { font-weight: 600; }
+.sub { color: var(--ink-soft); font-size: 12px; }
+.snip { margin: 4px 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 6px;
+  padding: 4px 10px; color: var(--ink);
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+:root[data-theme="dark"] .btn.primary { color: #0b1512; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #0b1512; } }
+.btn.danger { color: var(--danger); }
+.btn.link { border: 0; background: none; color: var(--accent-ink); padding: 4px 2px; text-decoration: underline; }
+.btn.block { width: 100%; padding: 7px; }
+.section-h { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-soft); margin: 14px 0 6px; display: flex; justify-content: space-between; }
+.badge { font-size: 11px; border-radius: 4px; padding: 0 6px; font-weight: 600; white-space: nowrap; }
+.b-matched { background: var(--accent-bg); color: var(--accent-ink); }
+.b-possible, .b-alt { background: var(--warn-bg); color: var(--warn); }
+.b-unverified, .b-nophone { background: var(--muted-bg); color: var(--ink-soft); }
+.b-danger { background: var(--danger-bg); color: var(--danger); }
+.field { display: block; margin-bottom: 8px; }
+.field span { display: block; font-size: 12px; color: var(--ink-soft); margin-bottom: 2px; }
+.field input, .field select, .field textarea {
+  width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; background: var(--surface);
+}
+.field textarea { min-height: 70px; resize: vertical; }
+.empty { text-align: center; padding: 22px 12px; color: var(--ink-soft); }
+.empty .big { font-size: 15px; color: var(--ink); font-weight: 600; margin-bottom: 4px; }
+.empty .actions { justify-content: center; }
+.note { font-size: 12px; color: var(--ink-soft); }
+.note.warn { color: var(--warn); }
+.note.danger { color: var(--danger); }
+.kv { display: grid; grid-template-columns: 110px 1fr; gap: 4px 8px; margin: 6px 0; }
+.kv dt { color: var(--ink-soft); }
+.kv dd { margin: 0; }
+.check { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; }
+.check .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); flex: none; display: grid; place-items: center; font-size: 11px; }
+.check.done .dot { background: var(--accent); border-color: var(--accent); color: #fff; }
+.progress { height: 6px; background: var(--muted-bg); border-radius: 3px; overflow: hidden; margin: 6px 0; }
+.progress i { display: block; height: 100%; background: var(--accent); }
+.preview { white-space: pre-wrap; background: var(--muted-bg); border-radius: 6px; padding: 8px; margin: 6px 0; }
+.ph { background: var(--danger-bg); color: var(--danger); border-radius: 3px; padding: 0 3px; font-weight: 600; }
+.ac-list { border: 1px solid var(--line); border-radius: 6px; background: var(--surface); margin-top: -4px; margin-bottom: 8px; }
+.ac-list button { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 5px 8px; border-top: 1px solid var(--line); }
+.ac-list button:first-child { border-top: 0; }
+.ac-list button:hover { background: var(--muted-bg); }
+
+/* ---------- Tooltip (only on unclear controls) ---------- */
+[data-tip] { position: relative; }
+[data-tip]:hover::after, [data-tip]:focus-visible::after {
+  content: attr(data-tip); position: absolute; z-index: 30; left: 50%; top: calc(100% + 6px); transform: translateX(-50%);
+  width: max-content; max-width: 230px; background: #22302c; color: #fff; font-size: 12px; font-weight: 400;
+  line-height: 1.4; padding: 6px 8px; border-radius: 6px; white-space: normal; text-transform: none; letter-spacing: 0; text-align: left;
+}
+.tip-left[data-tip]:hover::after, .tip-left[data-tip]:focus-visible::after { left: auto; right: 0; transform: none; }
+.q { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--ink-soft); color: var(--ink-soft); font-size: 10px; font-weight: 700; margin-left: 3px; cursor: help; vertical-align: middle; }
+
+/* ---------- Overlays inside the sidebar ---------- */
+.sheet {
+  position: absolute; inset: 0; background: var(--bg); z-index: 20; display: flex; flex-direction: column;
+}
+.sheet .bar { gap: 6px; }
+.sheet main { padding: 12px; }
+.modal-bg { position: absolute; inset: 0; background: rgba(0,0,0,.35); z-index: 25; display: grid; place-items: center; padding: 16px; }
+.modal { background: var(--surface); border-radius: 10px; padding: 14px; width: 100%; box-shadow: var(--shadow); }
+.modal h4 { margin: 0 0 6px; font-size: 14px; }
+.toast {
+  position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 40; border-radius: 8px; padding: 8px 10px;
+  background: #22302c; color: #fff; box-shadow: var(--shadow); display: flex; gap: 8px; align-items: center;
+}
+.toast.err { background: var(--danger); }
+.toast .grow { flex: 1; }
+.toast button { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.6); border-radius: 4px; padding: 1px 8px; }
+
+/* ---------- Tour ---------- */
+.tour-ring { outline: 3px solid #f3c969 !important; outline-offset: -3px; }
+.tour-card {
+  position: absolute; left: 10px; right: 10px; top: 92px; z-index: 35; background: var(--surface);
+  border: 2px solid #f3c969; border-radius: 10px; padding: 12px; box-shadow: var(--shadow);
+}
+.tour-card h4 { margin: 0 0 4px; }
+</style>
+</head>
+<body>
+
+<div class="demo" id="demo"></div>
+
+<div class="stage">
+  <section class="wa" aria-label="WhatsApp Web (mock)">
+    <div class="wa-list" id="waList"></div>
+    <div class="wa-chat" id="waChat"></div>
+  </section>
+  <aside class="side" id="side"></aside>
+</div>
+
+<script>
+'use strict';
+
+/* ======================= Sample data (fake people) ======================= */
+const TODAY = '2026-09-28';
+const HELP_URL = 'https://github.com/fukusya/recruitment-chat-assistant#readme';
+const ROLES = ['QA Engineer', 'Product Manager'];
+
+const POOL = { 'QA Engineer': ['QA-5093', 'QA-5094'], 'Product Manager': ['PM-2210', 'PM-2211'] };
+
+function sampleCandidates() {
+  return [
+    { id: 'QA-001', personId: 'P-01', name: 'Rina Kusuma', role: 'QA Engineer', email: 'rina@example.com', phone: '0812-3456-7801', alt: '', stage: 'Assessment sent', sent: '2026-09-25', deadline: '2026-09-29', code: 'QA-4821', followUp: 'Not yet', notes: 'Asked about the test link.', deleted: false, reminderAt: '' },
+    { id: 'PM-004', personId: 'P-02', name: 'Budi Santoso', role: 'Product Manager', email: 'budi@example.com', phone: '0813-2200-1144', alt: '0857-9911-3030', stage: 'Assessment sent', sent: '2026-09-24', deadline: '2026-09-28', code: 'PM-1177', followUp: 'Not yet', notes: '', deleted: false, reminderAt: '' },
+    { id: 'QA-007', personId: 'P-03', name: 'Sari Wulandari', role: 'QA Engineer', email: 'sari@example.com', phone: '0821-7000-5566', alt: '', stage: 'Assessment sent', sent: '2026-09-21', deadline: '2026-09-26', code: '', followUp: 'Not yet', notes: 'Code not given yet.', deleted: false, reminderAt: '' },
+    { id: 'PM-009', personId: 'P-04', name: 'Dimas Pratama', role: 'Product Manager', email: 'dimas@example.com', phone: '0815-4040-7788', alt: '', stage: 'Interview', sent: '', deadline: '', code: '', followUp: 'Not yet', notes: 'Waiting for his available dates.', deleted: false, reminderAt: '2026-09-28 10:00' },
+    { id: 'QA-011', personId: 'P-05', name: 'Andi Wijaya', role: 'QA Engineer', email: 'andi.w@example.com', phone: '', alt: '', stage: 'Applied', sent: '', deadline: '', code: '', followUp: 'Not yet', notes: '', deleted: false, reminderAt: '' },
+    { id: 'PM-012', personId: 'P-05', name: 'Andi Wijaya', role: 'Product Manager', email: 'andi.w@example.com', phone: '', alt: '', stage: 'Screening', sent: '', deadline: '', code: '', followUp: 'Handled 22 Sep', notes: '', deleted: false, reminderAt: '' },
+    { id: 'PM-014', personId: 'P-06', name: 'Fajar Nugroho', role: 'Product Manager', email: 'fajar@example.com', phone: '0819-5151-2323', alt: '', stage: 'Assessment sent', sent: '2026-09-23', deadline: '2026-09-28', code: 'PM-1180', followUp: 'Handled 28 Sep', notes: '', deleted: false, reminderAt: '' },
+    { id: 'QA-015', personId: 'P-07', name: 'Maya Lestari', role: 'QA Engineer', email: 'maya@example.com', phone: '0838-1212-9090', alt: '', stage: 'Rejected', sent: '', deadline: '', code: '', followUp: 'Not yet', notes: 'Duplicate row.', deleted: true, reminderAt: '' },
+  ];
+}
+
+function sampleInbox() {
+  return [
+    { id: 'c1', title: 'Rina Kusuma', phone: '0812-3456-7801', time: '09:12', text: 'Kak, link tesnya bisa dibuka besok pagi?', status: 'matched', candidateId: 'QA-001', noReply: false },
+    { id: 'c2', title: '+62 857-9911-3030', phone: '0857-9911-3030', time: '08:40', text: 'Sudah saya kerjakan ya kak', status: 'alt', candidateId: 'PM-004', noReply: false },
+    { id: 'c3', title: 'Andi W', phone: '0896-4455-1212', time: '08:05', text: 'Halo kak, mau tanya jadwal interview', status: 'possible', candidateId: null, suggestId: 'QA-011', noReply: false },
+    { id: 'c4', title: 'Sari (Kampus)', phone: '', time: 'Yesterday', text: 'Maaf kak, kodenya belum saya terima', status: 'unverified', candidateId: null, noReply: false },
+    { id: 'c5', title: 'Info Loker Bekasi', phone: '0877-0000-1111', time: 'Yesterday', text: 'Promo iklan lowongan...', status: 'unverified', candidateId: null, noReply: true },
+  ];
+}
+
+const STATUS = {
+  matched:    { label: 'Matched',          cls: 'b-matched',    tip: 'Nomor WhatsApp ini sama persis dengan Primary Phone kandidat di Sheet.' },
+  alt:        { label: 'Alternate number', cls: 'b-alt',        tip: 'Nomor ini cocok dengan Alternate Phone kandidat, bukan nomor utama.' },
+  possible:   { label: 'Possible match',   cls: 'b-possible',   tip: 'Hanya namanya yang mirip. Belum pasti orang yang sama — konfirmasi dulu lewat Link to candidate.' },
+  unverified: { label: 'Unverified',       cls: 'b-unverified', tip: 'WhatsApp tidak menampilkan nomor chat ini, atau nomornya belum ada di Sheet. Extension tidak menebak.' },
+  nophone:    { label: 'No phone',         cls: 'b-nophone',    tip: 'Kandidat ini belum punya nomor di Sheet, jadi chat tidak bisa dicocokkan otomatis.' },
+};
+
+const TEMPLATES = [
+  { id: 'thanks', name: 'Thank you for applying', body: 'Halo {name}, terima kasih sudah melamar posisi {role} di Jakmall. Kami akan menghubungi kembali setelah proses screening.\n\nSalam,\n{hr_name}\n{hr_title}' },
+  { id: 'result', name: 'Assessment received', body: 'Halo {name}, hasil assessment {role} sudah kami terima. Kami kabari tahap berikutnya paling lambat 3 hari kerja.\n\nSalam,\n{hr_name}' },
+];
+
+const FLOW = [
+  { key: 'setup',   label: '1 Setup',             next: 'Buka tab Settings, isi profil, klik "Test connection", lalu "Finish setup".' },
+  { key: 'today',   label: '2 Today’s work',      next: 'Buka tab Reminders untuk lihat siapa yang perlu dihubungi hari ini (atau cek Inbox).' },
+  { key: 'open',    label: '3 Open candidate',    next: 'Klik nama kandidat (mis. Budi Santoso) untuk buka detailnya.' },
+  { key: 'message', label: '4 Choose message',    next: 'Klik "Write message", pilih jenis pesan, cek preview.' },
+  { key: 'wa',      label: '5 Open WhatsApp draft', next: 'Pilih nomor lalu klik "Open WhatsApp draft". Draft muncul di WhatsApp tiruan kiri — di aslinya kamu sendiri yang tekan Send.' },
+  { key: 'save',    label: '6 Follow-up & save',  next: 'Klik "I sent it — mark as followed up" untuk simulasi simpan ke Sheet. Coba juga "Start follow-up" di Reminders.' },
+];
+
+/* ======================= State ======================= */
+let S;
+function freshState() {
+  return {
+    setupDone: false, tourStep: -1,
+    profile: { name: '', title: '' }, sheetUrl: '', sheetTested: false,
+    tab: 'settings', candidates: sampleCandidates(), inbox: sampleInbox(), pool: JSON.parse(JSON.stringify(POOL)),
+    detailId: null, showDeleted: false, search: '', roleFilter: 'All',
+    composer: null, queue: null, waDraft: null, afterDraft: null,
+    modal: null, toast: null, saving: false,
+    notifications: false, notifyTime: '09:00', ai: false,
+    flowDone: {}, simulateError: false, emptyPreview: false,
+  };
+}
+S = freshState();
+
+/* ======================= Helpers ======================= */
+const $ = (sel, root = document) => root.querySelector(sel);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const cand = (id) => S.candidates.find((c) => c.id === id);
+const fmtDate = (d) => {
+  if (!d) return '—';
+  const [y, m, day] = d.slice(0, 10).split('-').map(Number);
+  const mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m - 1];
+  return `${day} ${mon}${d.length > 10 ? ' ' + d.slice(11) : ''}`;
+};
+const addDays = (d, n) => { const t = new Date(d + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
+const others = (c) => S.candidates.filter((o) => o.personId === c.personId && o.id !== c.id && !o.deleted);
+function markFlow(key) {
+  const i = FLOW.findIndex((f) => f.key === key);
+  for (let k = 0; k <= i; k++) S.flowDone[FLOW[k].key] = true;
+}
+
+/* Simulated write-back. Honest states: saving → saved OR error + retry. Nothing leaves this page. */
+function saveToSheet(what, apply) {
+  if (S.saving) return;
+  S.saving = true;
+  S.toast = { kind: 'info', text: `Saving to Sheet… (${what})` };
+  render();
+  setTimeout(() => {
+    S.saving = false;
+    if (S.simulateError) {
+      S.toast = { kind: 'err', text: `Couldn’t save to Sheet. Nothing was changed. (${what})`, retry: () => saveToSheet(what, apply) };
+    } else {
+      apply();
+      S.toast = { kind: 'info', text: `Saved to Sheet ✓ (${what})`, auto: true };
+      setTimeout(() => { if (S.toast && S.toast.auto) { S.toast = null; render(); } }, 2200);
+    }
+    render();
+  }, 900);
+}
+
+/* ======================= Reminders logic (filter of Candidates) ======================= */
+function reminderGroups() {
+  const g = { due: [], overdue: [], today: [], tomorrow: [], done: [] };
+  for (const c of S.candidates) {
+    if (c.deleted) continue;
+    if (c.followUp.startsWith('Handled 28 Sep')) { if (c.deadline || c.reminderAt) g.done.push(c); continue; }
+    if (c.reminderAt && c.reminderAt.slice(0, 10) <= TODAY) { g.due.push(c); continue; }
+    if (c.stage !== 'Assessment sent' || !c.deadline) continue;
+    if (c.deadline < TODAY) g.overdue.push(c);
+    else if (c.deadline === TODAY) g.today.push(c);
+    else if (c.deadline === addDays(TODAY, 1)) g.tomorrow.push(c);
+  }
+  return g;
+}
+const reminderCount = () => { const g = reminderGroups(); return g.due.length + g.overdue.length + g.today.length + g.tomorrow.length; };
+const inboxCount = () => S.inbox.filter((r) => !r.noReply).length;
+
+/* ======================= Render: demo guide ======================= */
+function renderDemo() {
+  const nowIdx = FLOW.findIndex((f) => !S.flowDone[f.key]);
+  const now = nowIdx === -1 ? null : FLOW[nowIdx];
+  $('#demo').innerHTML = `
+    <div style="background:#7c2d12;color:#fff;padding:8px 10px;border-radius:8px;margin:-2px -2px 8px;font-weight:700">
+      PREVIEW INTERAKTIF — data contoh. Ini wireframe yang sudah disetujui, bukan extension final.
+      Jangan masukkan link Sheet atau data kandidat asli.
+    </div>
+    <span class="tag">WIREFRAME</span>
+    <b>Data contoh · tidak ada yang dikirim ke WhatsApp atau ditulis ke Sheet</b>
+    <div class="steps">${FLOW.map((f, i) => `<button data-flow="${f.key}" class="${S.flowDone[f.key] ? 'done' : i === nowIdx ? 'now' : ''}">${f.label}</button>`).join('')}</div>
+    <div class="next">${now ? 'Langkah berikut: ' + esc(now.next) : 'Alur contoh selesai ✓ — silakan coba bagian lain atau Reset demo.'}</div>
+    <div class="ctl">
+      <label><input type="checkbox" id="dErr" ${S.simulateError ? 'checked' : ''}> Simulasi gagal simpan</label>
+      <label><input type="checkbox" id="dEmpty" ${S.emptyPreview ? 'checked' : ''}> Lihat empty state</label>
+      <button id="dReset">Reset demo</button>
+    </div>`;
+}
+
+/* ======================= Render: fake WhatsApp ======================= */
+function renderWA() {
+  const rows = S.emptyPreview ? [] : S.inbox;
+  $('#waList').innerHTML = `<h3>WhatsApp (mock)</h3>` + rows.map((r) => `
+    <div class="wa-row"><div class="row-top"><span class="n">${esc(r.title)}</span><span class="sub">${esc(r.time)}</span></div>
+    <div class="s">${esc(r.text)}</div></div>`).join('');
+  const d = S.waDraft;
+  if (!d) {
+    $('#waChat').innerHTML = `<div class="wa-head">&nbsp;</div><div class="wa-body"><div class="wa-empty">
+      Ini tiruan WhatsApp Web.<br>Draft pesan akan muncul di sini <b>hanya setelah kamu klik “Open WhatsApp draft”</b> di sidebar.</div></div>`;
+    return;
+  }
+  $('#waChat').innerHTML = `
+    <div class="wa-head">${esc(d.name)} · ${esc(d.phone)}</div>
+    <div class="wa-body">${d.lastIn ? `<div class="bubble">${esc(d.lastIn)}</div>` : ''}</div>
+    <div class="wa-compose">
+      <div class="box">${esc(d.text)}</div>
+      <div class="note">Draft terbuka karena kamu klik tombolnya. Di WhatsApp asli: baca ulang, edit bila perlu, lalu <b>kamu sendiri yang menekan Send</b>. Extension tidak pernah menekan Send.</div>
+    </div>`;
+}
+
+/* ======================= Render: sidebar ======================= */
+function renderSide() {
+  const side = $('#side');
+  const conn = S.setupDone ? '<span class="chip ok tip-left" data-tip="Terhubung ke Sheet tim (contoh). Data terakhir diambil 09:30.">Sheet synced 09:30</span>'
+                           : '<span class="chip warn">Setup needed</span>';
+  side.innerHTML = `
+    <div class="bar">
+      <span class="title">Recruitment Assistant</span>
+      ${conn}
+      <a class="icon-btn tip-left" href="${HELP_URL}" target="_blank" rel="noopener" data-tip="Buka panduan di GitHub (Bahasa Indonesia, ada screenshot)." aria-label="Help">?</a>
+    </div>
+    <nav class="tabs">
+      ${tabBtn('inbox', 'Inbox', S.setupDone && !S.emptyPreview ? inboxCount() : 0)}
+      ${tabBtn('reminders', 'Reminders', S.setupDone && !S.emptyPreview ? reminderCount() : 0)}
+      ${tabBtn('candidates', 'Candidates', 0)}
+      ${tabBtn('settings', 'Settings', 0)}
+    </nav>
+    <main id="main"></main>`;
+  const main = $('#main');
+  if (S.tab === 'settings') main.innerHTML = viewSettings();
+  else if (!S.setupDone) main.innerHTML = viewNeedsSetup();
+  else if (S.tab === 'inbox') main.innerHTML = viewInbox();
+  else if (S.tab === 'reminders') main.innerHTML = viewReminders();
+  else if (S.tab === 'candidates') main.innerHTML = S.detailId ? viewDetail(cand(S.detailId)) : viewCandidates();
+
+  if (S.composer) side.insertAdjacentHTML('beforeend', viewComposer());
+  if (S.queue) side.insertAdjacentHTML('beforeend', viewQueue());
+  if (S.modal) side.insertAdjacentHTML('beforeend', `<div class="modal-bg"><div class="modal">${S.modal.html}</div></div>`);
+  if (S.tourStep >= 0) side.insertAdjacentHTML('beforeend', viewTour());
+  if (S.toast) side.insertAdjacentHTML('beforeend', `<div class="toast ${S.toast.kind === 'err' ? 'err' : ''}"><span class="grow">${esc(S.toast.text)}</span>
+      ${S.toast.retry ? '<button data-act="retry">Retry</button>' : ''}${S.saving ? '' : '<button data-act="closeToast">×</button>'}</div>`);
+}
+function tabBtn(key, label, n) {
+  return `<button id="tab-${key}" data-tab="${key}" class="${S.tab === key ? 'active' : ''}">${label}${n ? `<span class="count">${n}</span>` : ''}</button>`;
+}
+
+function viewNeedsSetup() {
+  return `<div class="empty"><div class="big">Finish setup first</div>
+    Connect the team Sheet so this tab can show your candidates. It takes about 2 minutes.
+    <div class="actions"><button class="btn primary" data-tab="settings">Go to Settings</button></div></div>`;
+}
+
+/* ---------- Settings ---------- */
+function viewSettings() {
+  const p = S.profile;
+  const steps = [
+    { done: !!(p.name && p.title), t: 'Fill your profile', d: 'Your name and job title appear at the end of messages.' },
+    { done: S.sheetTested, t: 'Connect the team Sheet', d: 'One shared Google Sheet for all HR. Candidates are added there, not here.' },
+    { done: S.sheetTested, t: 'Check your roles', d: 'Roles come from the “Role Assignments” sheet.' },
+  ];
+  const allReady = steps.every((s) => s.done);
+  return `
+    <p class="helper"><b>Settings</b> connects you to the team Sheet and stores your profile. Do this once; after that you mostly use Inbox and Reminders.</p>
+    ${!S.setupDone ? `
+    <div class="card" id="setupCard">
+      <div class="name">Welcome 👋 — 3 steps before you start</div>
+      ${steps.map((s, i) => `<div class="check ${s.done ? 'done' : ''}"><span class="dot">${s.done ? '✓' : i + 1}</span><div><b>${s.t}</b><div class="sub">${s.d}</div></div></div>`).join('')}
+      <button class="btn primary block" data-act="finishSetup" ${allReady ? '' : 'disabled'}>Finish setup &amp; take 1‑minute tour</button>
+      ${allReady ? '' : '<div class="note" style="margin-top:4px">Complete the steps below to continue.</div>'}
+    </div>` : `
+    <div class="card"><div class="row-top"><span class="name">Setup complete ✓</span><button class="btn link" data-act="tour">Replay tour</button></div>
+      <div class="sub">Next: open <b>Reminders</b> to see today’s work.</div></div>`}
+
+    <div class="section-h">Your profile</div>
+    <div class="card">
+      <label class="field"><span>Your name</span><input id="pName" value="${esc(p.name)}" placeholder="e.g. Lathisya"></label>
+      <label class="field"><span>Job title</span><input id="pTitle" value="${esc(p.title)}" placeholder="e.g. HR Recruiter"></label>
+      <div class="note">Saved in this browser only.</div>
+    </div>
+
+    <div class="section-h">Team Sheet</div>
+    <div class="card">
+      <label class="field"><span>Google Sheet link</span><input id="sUrl" value="${esc(S.sheetUrl)}" placeholder="https://docs.google.com/spreadsheets/d/…"></label>
+      <div class="note" style="margin:2px 0 0;color:#b45309">Sample only — tidak terhubung ke Google. Jangan masukkan link Sheet asli di sini.</div>
+      <div class="actions" style="margin-top:8px">
+        <button class="btn ${S.sheetTested ? '' : 'primary'}" data-act="testSheet">Test connection</button>
+        <button class="btn link" data-act="useSample">Use sample link</button>
+      </div>
+      ${S.sheetTested ? `<div class="note" style="margin-top:6px">✓ Connected (sample). Found 2 role sheets, 7 active candidates.</div>` : ''}
+    </div>
+
+    <div class="section-h">Your roles</div>
+    <div class="card">
+      ${S.sheetTested ? ROLES.map((r) => `<div class="row-top"><span>${r}</span><span class="chip ok">Assigned to you</span></div>`).join('<div style="height:4px"></div>')
+        + '<div class="note" style="margin-top:6px">To move a role to another HR, change the “Role Assignments” sheet. Candidate rows don’t move.</div>'
+        : '<div class="note">Connect the Sheet to see which roles are assigned to you.</div>'}
+    </div>
+
+    <div class="section-h">Messages</div>
+    <div class="card">
+      <div class="row-top"><span>Shared templates</span><span class="sub">${TEMPLATES.length} from Sheet</span></div>
+      <div class="note">Templates are shared by all HR. Edit them in the “Templates” sheet.</div>
+    </div>
+
+    <div class="section-h">Optional</div>
+    <div class="card">
+      <label class="check" style="padding:0"><input type="checkbox" id="optNotif" ${S.notifications ? 'checked' : ''}>
+        <div><b>Daily reminder notification</b> <span class="q" data-tip="Isinya hanya jumlah reminder, tanpa nama atau nomor kandidat. Klik notifikasi membuka extension, bukan WhatsApp.">?</span>
+        <div class="sub">Off by default. ${S.notifications ? `Every day at <input id="optTime" type="time" value="${S.notifyTime}" style="border:1px solid var(--line);border-radius:4px;padding:0 4px">` : ''}</div></div></label>
+      <div style="height:8px"></div>
+      <label class="check" style="padding:0"><input type="checkbox" id="optAi" ${S.ai ? 'checked' : ''}>
+        <div><b>AI writing help</b> <span class="q" data-tip="Opsional. Semua fitur utama tetap jalan tanpa AI dan tanpa biaya.">?</span>
+        <div class="sub">Off by default. Needs your own free API key.</div></div></label>
+    </div>
+
+    <div class="section-h">Backup &amp; help</div>
+    <div class="card">
+      <div class="actions" style="margin-top:0">
+        <button class="btn" data-act="demoOnly" data-msg="Export backup (demo only)">Export backup</button>
+        <button class="btn" data-act="demoOnly" data-msg="Import backup (demo only)">Import backup</button>
+        <a class="btn" href="${HELP_URL}" target="_blank" rel="noopener">Open guide on GitHub</a>
+      </div>
+      <div class="note" style="margin-top:6px">Backups never include keys or passwords.</div>
+    </div>`;
+}
+
+/* ---------- Inbox ---------- */
+function viewInbox() {
+  const rows = S.emptyPreview ? [] : S.inbox;
+  const active = rows.filter((r) => !r.noReply);
+  const quiet = rows.filter((r) => r.noReply);
+  const head = `<p class="helper"><b>Inbox</b> shows WhatsApp chats that may need your reply. Open the chat, reply, then choose <b>Set Reminder</b> or <b>No Reply Needed</b>.
+    <br><span class="note">Only chats currently visible in WhatsApp are checked.</span> <span class="q" data-tip="WhatsApp Web hanya memuat chat yang terlihat di layar. Scroll daftar chat WhatsApp untuk memeriksa lebih banyak.">?</span></p>`;
+  if (!active.length && !quiet.length) {
+    return head + `<div class="empty"><div class="big">Nothing needs a reply right now</div>
+      Scroll your WhatsApp chat list to check older chats, or see who needs a follow-up today.
+      <div class="actions"><button class="btn primary" data-tab="reminders">Open Reminders</button></div></div>`;
+  }
+  return head
+    + (active.length ? active.map(inboxRow).join('') : `<div class="empty"><div class="big">All caught up ✓</div>New messages will appear here.<div class="actions"><button class="btn" data-tab="reminders">Open Reminders</button></div></div>`)
+    + (quiet.length ? `<div class="section-h"><span>No reply needed</span></div>
+      <div class="note" style="margin-bottom:6px">These move back up automatically when a new message arrives.</div>${quiet.map(inboxRow).join('')}` : '');
+}
+function inboxRow(r) {
+  const st = STATUS[r.status];
+  const c = r.candidateId ? cand(r.candidateId) : null;
+  const sug = r.suggestId ? cand(r.suggestId) : null;
+  const linked = !!c;
+  const sess = !linked && r.sessionId ? cand(r.sessionId) : null;
+  let who = '';
+  if (c) who = `<div class="sub">${esc(c.name)} · ${esc(c.role)} · ${esc(c.stage)}${c.reminderAt ? ` · ⏰ ${fmtDate(c.reminderAt)}` : ''}</div>`;
+  else if (sess) who = `<div class="sub">Using <b>${esc(sess.name)}</b> (${esc(sess.role)}) <b>for this session only</b></div>`;
+  else if (sug) who = `<div class="sub">Maybe <b>${esc(sug.name)}</b> (${esc(sug.role)}) — name only, not confirmed</div>`;
+  else who = `<div class="sub">Not linked to a candidate</div>`;
+  return `<div class="card ${r.noReply ? 'dim' : ''}">
+    <div class="row-top"><span class="name">${esc(r.title)}</span><span class="badge tip-left ${st.cls}" data-tip="${esc(st.tip)}" tabindex="0">${st.label}</span></div>
+    ${who}
+    <div class="snip">“${esc(r.text)}” <span class="sub">${esc(r.time)}</span></div>
+    ${sess ? sessionBox(r, sess) : ''}
+    ${r.linkOpen ? linkBox(r) : ''}
+    ${r.remOpen ? reminderBox(r) : ''}
+    <div class="actions">
+      ${linked ? `<button class="btn primary" data-act="writeFor" data-id="${c.id}" data-chat="${r.id}">Write reply</button>
+                  <button class="btn" data-act="openCand" data-id="${c.id}">Open candidate</button>` : ''}
+      ${sess ? `<button class="btn primary" data-act="writeFor" data-id="${sess.id}" data-chat="${r.id}">Write reply</button>
+                <button class="btn" data-act="clearSession" data-chat="${r.id}">Stop using</button>` : ''}
+      ${!linked && sug ? `<button class="btn primary" data-act="confirmSuggest" data-chat="${r.id}">Yes, it’s ${esc(sug.name.split(' ')[0])}</button>` : ''}
+      ${!linked && !sess ? (r.phone
+        ? `<button class="btn ${sug ? '' : 'primary'}" data-act="linkOpen" data-chat="${r.id}">Link to candidate</button>`
+        : `<button class="btn primary" data-act="linkOpen" data-chat="${r.id}" data-tip="WhatsApp tidak menampilkan nomor chat ini. Pilihan kandidat hanya dipakai untuk mengisi preview pesan di sesi ini, lalu hilang.">Use for this session</button>`) : ''}
+      <button class="btn" data-act="remOpen" data-chat="${r.id}" ${linked ? '' : 'disabled'}
+        ${linked ? '' : sess || !r.phone
+          ? 'data-tip="Pilihan sesi tidak permanen. Simpan Alternate Phone ke Sheet dulu supaya reminder tersimpan di data kandidat."'
+          : 'data-tip="Hubungkan chat ke kandidat dulu (Link to candidate), supaya reminder tersimpan di data kandidat."'}>Set Reminder</button>
+      ${r.noReply ? `<button class="btn link" data-act="simNew" data-chat="${r.id}">(demo) new message arrives</button>`
+                  : `<button class="btn" data-act="noReply" data-chat="${r.id}" data-tip="Tandai chat ini tidak perlu dibalas. Tetap terlihat di bawah, dan naik lagi kalau ada pesan baru.">No Reply Needed</button>`}
+    </div>
+  </div>`;
+}
+function sessionBox(r, c) {
+  return `<div class="card" style="margin:6px 0 0;background:var(--muted-bg)">
+    <div class="note">WhatsApp doesn’t show this chat’s number, so this is <b>not</b> a saved link. It only fills in message previews, is <b>forgotten when this page or session ends</b>, and doesn’t change the candidate’s phones or the Sheet.</div>
+    <label class="field" style="margin:6px 0 4px"><span>Know this chat’s number? Save it as ${esc(c.name.split(' ')[0])}’s Alternate Phone to link it permanently.</span>
+      <input data-alt-input="${r.id}" value="${esc(r.altDraft || '')}" placeholder="e.g. 0812-xxxx-xxxx" inputmode="tel" autocomplete="off"></label>
+    <button class="btn" data-act="altSave" data-chat="${r.id}" ${(r.altDraft || '').replace(/\D/g, '').length >= 9 ? '' : 'disabled'}>Save as Alternate Phone…</button>
+  </div>`;
+}
+function linkBox(r) {
+  const q = (r.linkQuery || '').toLowerCase();
+  const hits = q ? S.candidates.filter((c) => !c.deleted && (c.name.toLowerCase().includes(q) || c.email.includes(q))).slice(0, 5) : [];
+  return `<label class="field" style="margin-top:6px"><span>${r.phone ? 'Find candidate (name or email)' : 'Which candidate is this? (this session only, not saved)'}</span>
+    <input data-link-input="${r.id}" value="${esc(r.linkQuery || '')}" placeholder="Type at least 2 letters…" autocomplete="off"></label>
+    ${hits.length ? `<div class="ac-list">${hits.map((c) => `<button data-act="linkPick" data-chat="${r.id}" data-id="${c.id}">${esc(c.name)} <span class="sub">· ${esc(c.role)} · ${esc(c.email)}</span></button>`).join('')}</div>` : q.length >= 2 ? '<div class="note">No match. Candidates are added in the Sheet.</div>' : ''}`;
+}
+function reminderBox(r) {
+  return `<div class="card" style="margin:6px 0 0;background:var(--muted-bg)">
+    <div class="sub" style="margin-bottom:4px">Remind me about this candidate:</div>
+    <div class="actions" style="margin-top:0">
+      <button class="btn" data-act="setRem" data-chat="${r.id}" data-at="${addDays(TODAY, 1)} 09:00">Tomorrow 09:00</button>
+      <button class="btn" data-act="setRem" data-chat="${r.id}" data-at="${addDays(TODAY, 3)} 09:00">In 3 days</button>
+      <input type="datetime-local" data-rem-custom="${r.id}" style="border:1px solid var(--line);border-radius:6px;padding:2px 4px">
+    </div>
+    <div class="note">The chat stays in place until the time comes, then moves to the top and into Reminders.</div></div>`;
+}
+
+/* ---------- Reminders ---------- */
+function viewReminders() {
+  const g = S.emptyPreview ? { due: [], overdue: [], today: [], tomorrow: [], done: [] } : reminderGroups();
+  const head = `<p class="helper"><b>Reminders</b> lists candidates who need a follow-up today, based on their assessment deadline or a reminder you set. Work from top to bottom.</p>`;
+  const todo = [...g.due, ...g.overdue, ...g.today, ...g.tomorrow];
+  if (!todo.length && !g.done.length) {
+    return head + `<div class="empty"><div class="big">No follow-ups due 🎉</div>
+      Reminders appear when an assessment deadline is near, or when you tap <b>Set Reminder</b> on a chat or candidate.
+      <div class="actions"><button class="btn primary" data-tab="candidates">Browse candidates</button><button class="btn" data-tab="inbox">Check Inbox</button></div></div>`;
+  }
+  const sec = (title, list, why) => list.length ? `<div class="section-h"><span>${title} (${list.length})</span></div>${list.map((c) => remRow(c, why)).join('')}` : '';
+  const ready = todo.filter((c) => c.code || c.stage !== 'Assessment sent');
+  return head
+    + (todo.length ? `<button class="btn primary block" data-act="startQueue" ${ready.length || S.pausedQueue ? '' : 'disabled'}>${S.pausedQueue ? 'Resume follow-up session' : `Start follow-up (${ready.length} candidates)`}</button>
+      <div class="note" style="margin:4px 0 0">Goes through them one by one. You open each draft and press Send yourself.</div>` : '')
+    + sec('Reminder due', g.due, 'due') + sec('Overdue', g.overdue, 'overdue') + sec('Due today', g.today, 'today') + sec('Due tomorrow', g.tomorrow, 'tomorrow')
+    + (g.done.length ? `<div class="section-h"><span>Followed up today (${g.done.length})</span></div>${g.done.map((c) => remRow(c, 'done')).join('')}` : '');
+}
+function remRow(c, why) {
+  const label = { due: `⏰ Reminder ${fmtDate(c.reminderAt)}`, overdue: `<span class="badge b-danger">Overdue · deadline ${fmtDate(c.deadline)}</span>`, today: `Deadline today`, tomorrow: `Deadline ${fmtDate(c.deadline)}`, done: `✓ ${esc(c.followUp)}` }[why];
+  const blocked = c.stage === 'Assessment sent' && !c.code;
+  return `<div class="card ${why === 'done' ? 'dim' : ''}">
+    <div class="row-top"><button class="btn link name" data-act="openCand" data-id="${c.id}">${esc(c.name)}</button><span class="sub">${esc(c.role)}</span></div>
+    <div class="sub">${label} · ${esc(c.stage)}${c.code ? ` · code ${esc(c.code)}` : ''}</div>
+    ${blocked ? `<div class="note danger">Psychotest code is empty — the assessment reminder can’t be sent yet.</div>` : ''}
+    ${why !== 'done' ? `<div class="actions">
+      ${blocked ? `<button class="btn primary" data-act="replaceCode" data-id="${c.id}">Get code from pool</button>`
+                : `<button class="btn primary" data-act="write" data-id="${c.id}" data-type="${c.stage === 'Assessment sent' ? 'assessment' : 'reply'}">Write message</button>`}
+      <button class="btn" data-act="openCand" data-id="${c.id}">Details</button></div>` : ''}
+  </div>`;
+}
+
+/* ---------- Candidates ---------- */
+function viewCandidates() {
+  const q = S.search.toLowerCase();
+  const list = (S.emptyPreview ? [] : S.candidates).filter((c) =>
+    (S.showDeleted ? c.deleted : !c.deleted) &&
+    (S.roleFilter === 'All' || c.role === S.roleFilter) &&
+    (!q || c.name.toLowerCase().includes(q) || c.email.includes(q) || c.phone.includes(q) || c.alt.includes(q)));
+  let body;
+  if (S.emptyPreview) body = `<div class="empty"><div class="big">No candidates yet</div>
+      Candidates are added in the team Sheet, on the sheet for your role. Add a row there, then refresh.
+      <div class="actions"><button class="btn primary" data-act="demoOnly" data-msg="Open Sheet (demo only)">Open Sheet</button><button class="btn" data-act="demoOnly" data-msg="Refreshed (demo)">Refresh</button></div></div>`;
+  else if (!list.length) body = `<div class="empty"><div class="big">No candidate matches “${esc(S.search)}”</div>
+      Try another name, email, or phone. New candidates are added in the Sheet.
+      <div class="actions"><button class="btn" data-act="clearSearch">Clear search</button></div></div>`;
+  else body = list.map((c) => {
+    const dup = others(c);
+    return `<div class="card ${c.deleted ? 'dim' : ''} ${c.id === 'PM-004' && !S.flowDone.open ? 'focus' : ''}">
+      <div class="row-top"><button class="btn link name" data-act="openCand" data-id="${c.id}">${esc(c.name)}</button><span class="sub">${esc(c.role)}</span></div>
+      <div class="sub">${esc(c.stage)}${c.deadline ? ` · deadline ${fmtDate(c.deadline)}` : ''}${c.phone ? '' : ' · <span class="badge b-nophone">No phone</span>'}
+        ${dup.length ? ` · <span class="badge b-possible" data-tip="Orang yang sama juga melamar di role lain (${esc(dup.map((d) => d.role).join(', '))}). Bukan larangan — cek dulu sebelum menghubungi.">Also in ${dup.length} other role</span>` : ''}
+        ${c.deleted ? ' · <span class="badge b-danger">Deleted</span>' : ''}</div>
+    </div>`;
+  }).join('');
+  return `<p class="helper"><b>Candidates</b> is the full list from the team Sheet. Search, open a candidate, then write a message or update their stage.</p>
+    <label class="field"><input id="cSearch" value="${esc(S.search)}" placeholder="Search name, email, or phone…"></label>
+    <div class="actions" style="margin:-2px 0 8px">
+      <select id="cRole" style="border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--surface)">
+        ${['All', ...ROLES].map((r) => `<option ${S.roleFilter === r ? 'selected' : ''}>${r === 'All' ? 'All my roles' : r}</option>`).join('')}</select>
+      <label class="sub" style="display:inline-flex;gap:4px;align-items:center"><input type="checkbox" id="cDel" ${S.showDeleted ? 'checked' : ''}> Show deleted</label>
+    </div>${body}`;
+}
+
+function viewDetail(c) {
+  const dup = others(c);
+  const phones = [c.phone && `${c.phone} <span class="sub">primary</span>`, c.alt && `${c.alt} <span class="sub">alternate</span>`].filter(Boolean).join('<br>') || '<span class="badge b-nophone">No phone</span> <span class="sub">Add it in the Sheet.</span>';
+  return `<button class="btn link" data-act="back">← All candidates</button>
+    <div class="card" style="margin-top:6px">
+      <div class="row-top"><span class="name" style="font-size:15px">${esc(c.name)}</span>${c.deleted ? '<span class="badge b-danger">Deleted</span>' : `<span class="sub">${esc(c.role)}</span>`}</div>
+      ${dup.length ? `<div class="note warn" style="margin-top:4px">⚠ Also applied for ${esc(dup.map((d) => `${d.role} (${d.stage}, ${d.followUp})`).join('; '))}. Check before contacting.</div>` : ''}
+      <dl class="kv">
+        <dt>Phone</dt><dd>${phones}</dd>
+        <dt>Email</dt><dd>${esc(c.email)}</dd>
+        <dt>Stage</dt><dd><select data-stage="${c.id}" ${c.deleted ? 'disabled' : ''} style="border:1px solid var(--line);border-radius:4px;background:var(--surface)">
+          ${['Applied', 'Screening', 'Assessment sent', 'Interview', 'Offering', 'Hired', 'Rejected'].map((s) => `<option ${s === c.stage ? 'selected' : ''}>${s}</option>`).join('')}</select></dd>
+        <dt>Deadline</dt><dd>${fmtDate(c.deadline)}</dd>
+        <dt>Psychotest code</dt><dd>${c.code ? esc(c.code) : '<span class="note danger">Empty</span>'}
+          ${!c.deleted ? `<button class="btn link" data-act="replaceCode" data-id="${c.id}" data-tip="Ambil kode Available paling bawah dari pool role ini. Ada preview dan konfirmasi dulu sebelum disimpan.">${c.code ? 'Replace code' : 'Get code'}</button>` : ''}</dd>
+        <dt>Follow-up</dt><dd>${esc(c.followUp)}</dd>
+        <dt>Reminder</dt><dd>${c.reminderAt ? '⏰ ' + fmtDate(c.reminderAt) : '—'}</dd>
+        <dt>Notes</dt><dd>${esc(c.notes) || '—'}</dd>
+      </dl>
+      ${c.deleted ? `<div class="actions"><button class="btn primary" data-act="restore" data-id="${c.id}">Restore candidate</button></div>`
+        : `<div class="actions">
+          <button class="btn primary" data-act="write" data-id="${c.id}" data-type="${c.stage === 'Assessment sent' ? 'assessment' : 'reply'}">Write message</button>
+          <button class="btn" data-act="candRem" data-id="${c.id}">Set Reminder</button>
+          <button class="btn danger" data-act="del" data-id="${c.id}">Delete</button></div>`}
+    </div>
+    <div class="note">Stage, code, reminder, and delete/restore are saved back to the team Sheet. Name, email, and phone are edited in the Sheet.</div>`;
+}
+
+/* ---------- Message composer (Write message) ---------- */
+function composeText(m) {
+  const c = cand(m.id);
+  const p = S.profile;
+  const vars = {
+    name: c.name.split(' ')[0], role: c.role, deadline: c.deadline ? fmtDate(c.deadline) : '', code: c.code,
+    hr_name: p.name, hr_title: p.title, date: m.iDate ? fmtDate(m.iDate) : '', time: m.iTime || '', place: m.iPlace || '',
+  };
+  let tpl;
+  if (m.type === 'reply') return { text: m.free || '', missing: m.free ? [] : ['your message'] };
+  if (m.type === 'assessment') tpl = 'Halo {name}, pengingat untuk assessment {role} dengan kode {code}. Batas pengerjaan {deadline}. Mohon dikerjakan sebelum batas waktu ya.\n\nTerima kasih,\n{hr_name}\n{hr_title}';
+  if (m.type === 'interview') tpl = 'Halo {name}, kami mengundang kamu interview posisi {role} pada {date} pukul {time} di {place}. Mohon konfirmasi kehadiran ya.\n\nSalam,\n{hr_name}\n{hr_title}';
+  if (m.type === 'template') tpl = (TEMPLATES.find((t) => t.id === m.tplId) || TEMPLATES[0]).body;
+  const missing = [];
+  const html = esc(tpl).replace(/\{(\w+)\}/g, (_, k) => { if (!vars[k]) { missing.push(k); return `<span class="ph">[${k}]</span>`; } return esc(vars[k]); });
+  const text = tpl.replace(/\{(\w+)\}/g, (_, k) => vars[k] || `[${k}]`);
+  return { html, text, missing };
+}
+function viewComposer() {
+  const m = S.composer;
+  const c = cand(m.id);
+  const out = composeText(m);
+  const nums = [c.phone && { v: c.phone, l: 'Primary' }, c.alt && { v: c.alt, l: 'Alternate' }].filter(Boolean);
+  if (!m.phone && nums.length === 1 && !m.sessionOnly) m.phone = nums[0].v;
+  const canOpen = !out.missing.length && m.phone && !m.sessionOnly;
+  return `<div class="sheet">
+    <div class="bar"><button class="btn link" data-act="closeComposer">← Back</button><span class="title">Message to ${esc(c.name)}</span></div>
+    <main>
+      <p class="helper">Pick a message type, check the preview, then open it as a WhatsApp draft. <b>You press Send in WhatsApp.</b></p>
+      <label class="field"><span>Message type</span><select id="mType">
+        ${[['reply', 'Write a reply'], ['assessment', 'Assessment reminder'], ['interview', 'Interview invitation'], ['template', 'Choose a template…']]
+          .map(([v, l]) => `<option value="${v}" ${m.type === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      ${m.type === 'reply' ? `<label class="field"><span>Your message</span><textarea id="mFree" placeholder="Type your reply…">${esc(m.free || '')}</textarea></label>` : ''}
+      ${m.type === 'interview' ? `<label class="field"><span>Interview date</span><input type="date" id="mDate" value="${esc(m.iDate || '')}"></label>
+        <label class="field"><span>Time</span><input type="time" id="mTime" value="${esc(m.iTime || '')}"></label>
+        <label class="field"><span>Place or meeting link</span><input id="mPlace" value="${esc(m.iPlace || '')}" placeholder="e.g. Google Meet link"></label>` : ''}
+      ${m.type === 'template' ? `<label class="field"><span>Template (shared, from Sheet)</span><select id="mTpl">${TEMPLATES.map((t) => `<option value="${t.id}" ${m.tplId === t.id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label>` : ''}
+      ${m.type !== 'reply' ? `<div class="section-h"><span>Preview</span></div><div class="preview">${out.html}</div>` : ''}
+      ${out.missing.length ? `<div class="note danger">Fill in: ${out.missing.map((k) => esc(k.replace('_', ' '))).join(', ')}.${out.missing.some((k) => k.startsWith('hr_')) ? ' (Your profile is in Settings.)' : ''}${out.missing.includes('code') ? ' Get a code from the candidate page first.' : ''}</div>` : ''}
+      <div class="section-h"><span>Send to</span></div>
+      ${m.sessionOnly ? '<div class="note warn">This chat’s number isn’t visible, so the draft can’t be opened by number. Copy the text and paste it into the chat that’s already open in WhatsApp.</div>'
+        : nums.length ? nums.map((n) => `<label class="check" style="padding:2px 0"><input type="radio" name="mPhone" value="${esc(n.v)}" ${m.phone === n.v ? 'checked' : ''}> ${esc(n.v)} <span class="sub">${n.l}</span></label>`).join('')
+        : '<div class="note danger">No phone number. Add it in the Sheet first.</div>'}
+      ${nums.length > 1 && !m.phone && !m.sessionOnly ? '<div class="note warn">This candidate has two numbers — choose one.</div>' : ''}
+      <div class="actions">
+        <button class="btn primary" data-act="openDraft" ${canOpen ? '' : 'disabled'}>Open WhatsApp draft</button>
+        <button class="btn" data-act="copyDraft" ${out.missing.length ? 'disabled' : ''}>Copy text</button>
+      </div>
+      ${S.afterDraft === m.id ? `<div class="card" style="margin-top:10px;border-color:var(--accent)">
+        <div class="name">Back from WhatsApp?</div>
+        <div class="sub">We can’t see whether you pressed Send. Tell us what happened:</div>
+        <div class="actions"><button class="btn primary" data-act="markFollowed" data-id="${c.id}" ${S.saving ? 'disabled' : ''}>I sent it — mark as followed up</button>
+        <button class="btn" data-act="closeComposer">Not yet</button></div>
+        <div class="note">Marking saves follow-up time and your name to the Sheet.</div></div>` : ''}
+    </main></div>`;
+}
+
+/* ---------- Sequential follow-up queue ---------- */
+function viewQueue() {
+  const q = S.queue;
+  const done = q.items.filter((i) => i.state !== 'Pending').length;
+  const cur = q.items.find((i) => i.state === 'Pending');
+  const counts = ['Handled', 'Skipped'].map((s) => `${q.items.filter((i) => i.state === s).length} ${s.toLowerCase()}`).join(' · ');
+  let body;
+  if (!cur) {
+    body = `<div class="empty"><div class="big">Follow-up session finished ✓</div>${counts}.<br>Handled candidates were saved to the Sheet.
+      <div class="actions"><button class="btn primary" data-act="endQueue">End session</button></div></div>`;
+  } else {
+    const c = cand(cur.id);
+    const out = composeText(queueMsg(c));
+    const opened = q.opened === c.id;
+    const needPhone = !!(c.phone && c.alt && !q.phone) || !(c.phone || c.alt);
+    body = `<div class="card">
+      <div class="row-top"><span class="name">${esc(c.name)}</span><span class="sub">${esc(c.role)}</span></div>
+      ${c.phone && c.alt ? `<div class="sub">Send to:</div>${[[c.phone, 'Primary'], [c.alt, 'Alternate']].map(([v, l]) => `<label class="check" style="padding:1px 0"><input type="radio" name="qPhone" value="${esc(v)}" ${q.phone === v ? 'checked' : ''}> ${esc(v)} <span class="sub">${l}</span></label>`).join('')}`
+        : `<div class="sub">to ${esc(c.phone || c.alt || 'no phone')}</div>`}
+      <div class="preview">${out.html}</div>
+      ${out.missing.length ? `<div class="note danger">Missing: ${out.missing.join(', ')} — Skip this one or fix it first.</div>` : ''}
+      <div class="actions">
+        <button class="btn ${opened ? '' : 'primary'}" data-act="qOpen" ${out.missing.length || needPhone ? 'disabled' : ''}>Open WhatsApp</button>
+        <button class="btn ${opened ? 'primary' : ''}" data-act="qHandled" ${opened && !S.saving ? '' : 'disabled'} data-tip="Klik setelah kamu menekan Send di WhatsApp. Waktu follow-up disimpan ke Sheet, lalu lanjut ke kandidat berikut.">Handled &amp; Next</button>
+        <button class="btn" data-act="qSkip">Skip</button>
+      </div>
+      ${opened ? '' : '<div class="note">Open the draft first. “Handled” unlocks after that.</div>'}
+    </div>`;
+  }
+  return `<div class="sheet">
+    <div class="bar"><button class="btn link" data-act="pauseQueue">← Pause</button><span class="title">Follow-up ${Math.min(done + 1, q.items.length)} of ${q.items.length}</span>
+      <button class="btn link" data-act="endQueue">End session</button></div>
+    <main>
+      <p class="helper">One candidate at a time: open the draft, press Send in WhatsApp yourself, come back, then <b>Handled &amp; Next</b>. Progress is kept if you close the sidebar.</p>
+      <label class="field"><span>Message for everyone in this session</span><select id="qType" ${done ? 'disabled' : ''}>
+        ${[['assessment', 'Assessment reminder'], ...TEMPLATES.map((t) => ['tpl:' + t.id, 'Template: ' + t.name])].map(([v, l]) => `<option value="${v}" ${q.type === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>
+      <div class="progress"><i style="width:${(done / q.items.length) * 100}%"></i></div>
+      <div class="sub" style="margin-bottom:8px">${counts} · ${q.items.length - done} pending</div>
+      ${body}
+      <div class="section-h"><span>Queue</span></div>
+      ${q.items.map((i) => `<div class="sub">${i.state === 'Handled' ? '✓' : i.state === 'Skipped' ? '↷' : '•'} ${esc(cand(i.id).name)} — ${i.state}</div>`).join('')}
+    </main></div>`;
+}
+
+function queueMsg(c) {
+  const t = S.queue.type;
+  return t.startsWith('tpl:') ? { id: c.id, type: 'template', tplId: t.slice(4) } : { id: c.id, type: 'assessment' };
+}
+
+/* ---------- Guided tour ---------- */
+const TOUR = [
+  { tab: 'inbox', h: 'Inbox', t: 'Chats that may need a reply. Link a chat to a candidate, then Set Reminder or mark No Reply Needed.' },
+  { tab: 'reminders', h: 'Reminders', t: 'Your to-do list for today: deadlines and reminders. Start here every morning.' },
+  { tab: 'candidates', h: 'Candidates', t: 'Everyone from the team Sheet. Open a candidate to write a message, change stage, or get a psychotest code.' },
+  { tab: 'settings', h: 'Settings & Help', t: 'Profile, Sheet connection, and optional notifications. The “?” button opens the full guide on GitHub.' },
+];
+function viewTour() {
+  const s = TOUR[S.tourStep];
+  return `<div class="tour-card"><div class="sub">Tour ${S.tourStep + 1} of ${TOUR.length}</div><h4>${s.h}</h4><div>${s.t}</div>
+    <div class="actions"><button class="btn primary" data-act="tourNext">${S.tourStep === TOUR.length - 1 ? 'Start with Reminders' : 'Next'}</button>
+    <button class="btn link" data-act="tourEnd">Skip tour</button></div></div>`;
+}
+
+/* ======================= Actions ======================= */
+function openComposer(id, type, chatId) {
+  const chat = chatId ? S.inbox.find((r) => r.id === chatId) : null;
+  S.composer = { id, type: type || 'reply', tplId: TEMPLATES[0].id, phone: chat && chat.phone ? chat.phone : '', chatId, sessionOnly: !!(chat && !chat.phone) };
+  S.afterDraft = null;
+  markFlow('open');
+}
+function codePreview(c) {
+  const pool = S.pool[c.role];
+  if (!pool.length) {
+    S.modal = { html: `<h4>No codes left for ${esc(c.role)}</h4><p class="note">Add new codes to the pool in this role’s sheet, then try again.</p><div class="actions"><button class="btn" data-act="closeModal">OK</button></div>` };
+    return;
+  }
+  const next = pool[pool.length - 1];
+  S.modal = { html: `<h4>${c.code ? 'Replace' : 'Get'} psychotest code</h4>
+    <dl class="kv"><dt>Candidate</dt><dd>${esc(c.name)}</dd><dt>New code</dt><dd><b>${esc(next)}</b> <span class="sub">(bottom-most Available in ${esc(c.role)} pool)</span></dd>
+    ${c.code ? `<dt>Old code</dt><dd>${esc(c.code)} → marked Invalid/Used</dd>` : ''}</dl>
+    <p class="note">The source cell in the pool is highlighted red so it’s easy to clean up. Nothing changes until you confirm.</p>
+    <div class="actions"><button class="btn primary" data-act="confirmCode" data-id="${c.id}">Confirm &amp; save to Sheet</button><button class="btn" data-act="closeModal">Cancel</button></div>` };
+}
+
+const ACT = {
+  retry: () => { const r = S.toast.retry; S.toast = null; r(); },
+  closeToast: () => { S.toast = null; },
+  closeModal: () => { S.modal = null; },
+  demoOnly: (el) => { S.toast = { kind: 'info', text: el.dataset.msg, auto: true }; setTimeout(() => { S.toast = null; render(); }, 1800); },
+  useSample: () => { S.sheetUrl = 'https://docs.google.com/spreadsheets/d/SAMPLE-TEAM-SHEET/edit'; },
+  testSheet: () => {
+    if (!S.sheetUrl.includes('docs.google.com/spreadsheets')) {
+      S.toast = { kind: 'err', text: 'That doesn’t look like a Google Sheet link. Copy it from the browser address bar.' }; return;
+    }
+    S.toast = { kind: 'info', text: 'Checking the Sheet…' }; render();
+    setTimeout(() => { S.sheetTested = true; S.toast = null; render(); }, 700);
+    return 'skip';
+  },
+  finishSetup: () => { S.setupDone = true; markFlow('setup'); S.tourStep = 0; S.tab = TOUR[0].tab; },
+  tour: () => { S.tourStep = 0; S.tab = TOUR[0].tab; },
+  tourNext: () => {
+    if (S.tourStep >= TOUR.length - 1) { S.tourStep = -1; S.tab = 'reminders'; markFlow('today'); return; }
+    S.tourStep++; S.tab = TOUR[S.tourStep].tab;
+  },
+  tourEnd: () => { S.tourStep = -1; },
+  back: () => { S.detailId = null; },
+  clearSearch: () => { S.search = ''; },
+  openCand: (el) => { S.tab = 'candidates'; S.detailId = el.dataset.id; markFlow('open'); },
+  write: (el) => { openComposer(el.dataset.id, el.dataset.type); },
+  writeFor: (el) => { openComposer(el.dataset.id, 'reply', el.dataset.chat); },
+  closeComposer: () => { S.composer = null; S.afterDraft = null; },
+  openDraft: () => {
+    const m = S.composer; const c = cand(m.id); const chat = m.chatId && S.inbox.find((r) => r.id === m.chatId);
+    S.waDraft = { name: c.name, phone: m.phone, text: composeText(m).text, lastIn: chat ? chat.text : '' };
+    S.afterDraft = m.id; markFlow('wa');
+  },
+  copyDraft: () => { S.toast = { kind: 'info', text: 'Copied (demo). Paste it in WhatsApp yourself.', auto: true }; setTimeout(() => { S.toast = null; render(); }, 1800); },
+  markFollowed: (el) => {
+    const id = el.dataset.id;
+    saveToSheet('follow-up', () => {
+      const c = cand(id); c.followUp = 'Handled 28 Sep'; c.reminderAt = '';
+      S.inbox.forEach((r) => { if (r.candidateId === id) r.noReply = true; });
+      S.composer = null; S.afterDraft = null; S.waDraft = null; markFlow('save');
+    });
+    return 'skip';
+  },
+  replaceCode: (el) => { codePreview(cand(el.dataset.id)); },
+  confirmCode: (el) => {
+    const c = cand(el.dataset.id); S.modal = null;
+    saveToSheet('psychotest code', () => { c.code = S.pool[c.role].pop(); });
+    return 'skip';
+  },
+  del: (el) => {
+    const c = cand(el.dataset.id);
+    S.modal = { html: `<h4>Delete ${esc(c.name)}?</h4><p class="note">The row is <b>not</b> erased. It’s marked Deleted and highlighted red in the Sheet, and hidden from lists. You can restore it anytime from “Show deleted”.</p>
+      <div class="actions"><button class="btn danger" data-act="confirmDel" data-id="${c.id}">Delete (can be restored)</button><button class="btn" data-act="closeModal">Cancel</button></div>` };
+  },
+  confirmDel: (el) => { const c = cand(el.dataset.id); S.modal = null; saveToSheet('delete', () => { c.deleted = true; S.detailId = null; }); return 'skip'; },
+  restore: (el) => { const c = cand(el.dataset.id); saveToSheet('restore', () => { c.deleted = false; }); return 'skip'; },
+  candRem: (el) => {
+    const c = cand(el.dataset.id);
+    S.modal = { html: `<h4>Set Reminder for ${esc(c.name)}</h4><div class="actions">
+      <button class="btn" data-act="candRemSet" data-id="${c.id}" data-at="${addDays(TODAY, 1)} 09:00">Tomorrow 09:00</button>
+      <button class="btn" data-act="candRemSet" data-id="${c.id}" data-at="${addDays(TODAY, 3)} 09:00">In 3 days</button>
+      <button class="btn" data-act="closeModal">Cancel</button></div><p class="note">Saved on the candidate in the Sheet, so it works even if the chat isn’t visible.</p>` };
+  },
+  candRemSet: (el) => { const c = cand(el.dataset.id); const at = el.dataset.at; S.modal = null; saveToSheet('reminder', () => { c.reminderAt = at; }); return 'skip'; },
+  // Inbox
+  noReply: (el) => { S.inbox.find((r) => r.id === el.dataset.chat).noReply = true; },
+  simNew: (el) => { const r = S.inbox.find((x) => x.id === el.dataset.chat); r.noReply = false; r.time = 'now'; r.text = 'Kak, saya mau tanya lagi…'; },
+  linkOpen: (el) => { const r = S.inbox.find((x) => x.id === el.dataset.chat); r.linkOpen = !r.linkOpen; r.remOpen = false; },
+  confirmSuggest: (el) => { const r = S.inbox.find((x) => x.id === el.dataset.chat); linkModal(r, r.suggestId); },
+  linkPick: (el) => {
+    const r = S.inbox.find((x) => x.id === el.dataset.chat);
+    if (r.phone) { linkModal(r, el.dataset.id); return; }
+    r.sessionId = el.dataset.id; r.linkOpen = false; r.linkQuery = ''; // memory only: gone on reload
+  },
+  clearSession: (el) => { const r = S.inbox.find((x) => x.id === el.dataset.chat); r.sessionId = null; r.altDraft = ''; },
+  altSave: (el) => {
+    const r = S.inbox.find((x) => x.id === el.dataset.chat); const c = cand(r.sessionId); const num = r.altDraft.trim();
+    S.modal = { html: `<h4>Save Alternate Phone for ${esc(c.name)}?</h4>
+      <dl class="kv"><dt>Number</dt><dd>${esc(num)}</dd><dt>Candidate</dt><dd>${esc(c.name)} · ${esc(c.role)}</dd>${c.alt ? `<dt>Replaces</dt><dd>${esc(c.alt)}</dd>` : ''}</dl>
+      <p class="note">Check the number in WhatsApp’s contact info first. This writes to the Sheet and links this chat to the candidate permanently.</p>
+      <div class="actions"><button class="btn primary" data-act="confirmAlt" data-chat="${r.id}">Save to Sheet</button><button class="btn" data-act="closeModal">Cancel</button></div>` };
+  },
+  confirmAlt: (el) => {
+    const r = S.inbox.find((x) => x.id === el.dataset.chat); const c = cand(r.sessionId); const num = r.altDraft.trim(); S.modal = null;
+    saveToSheet('alternate phone', () => { c.alt = num; r.phone = num; r.candidateId = c.id; r.status = 'alt'; r.sessionId = null; r.altDraft = ''; });
+    return 'skip';
+  },
+  confirmLink: (el) => {
+    const r = S.inbox.find((x) => x.id === el.dataset.chat); const c = cand(el.dataset.id); S.modal = null;
+    // Permanent links only exist when the chat's number is visible; they always write to the Sheet.
+    saveToSheet('phone link', () => { if (r.phone !== c.phone) c.alt = r.phone;
+      r.candidateId = c.id; r.status = r.phone === c.phone ? 'matched' : 'alt'; r.linkOpen = false; r.linkQuery = ''; });
+    return 'skip';
+  },
+  remOpen: (el) => { const r = S.inbox.find((x) => x.id === el.dataset.chat); r.remOpen = !r.remOpen; r.linkOpen = false; },
+  setRem: (el) => {
+    const r = S.inbox.find((x) => x.id === el.dataset.chat); const c = cand(r.candidateId); const at = el.dataset.at;
+    saveToSheet('reminder', () => { c.reminderAt = at; r.remOpen = false; }); return 'skip';
+  },
+  // Queue
+  startQueue: () => {
+    const g = reminderGroups();
+    const ids = [...g.due, ...g.overdue, ...g.today, ...g.tomorrow].filter((c) => c.code || c.stage !== 'Assessment sent').map((c) => c.id);
+    S.queue = S.queue && S.queue.items.some((i) => i.state === 'Pending') ? S.queue : { items: ids.map((id) => ({ id, state: 'Pending' })), opened: null, type: 'assessment' };
+    markFlow('message');
+  },
+  qOpen: () => {
+    const cur = S.queue.items.find((i) => i.state === 'Pending'); const c = cand(cur.id);
+    const out = composeText(queueMsg(c));
+    S.waDraft = { name: c.name, phone: S.queue.phone || c.phone || c.alt, text: out.text }; S.queue.opened = c.id; markFlow('wa');
+  },
+  qHandled: () => {
+    const cur = S.queue.items.find((i) => i.state === 'Pending');
+    saveToSheet('follow-up', () => { cur.state = 'Handled'; cand(cur.id).followUp = 'Handled 28 Sep'; cand(cur.id).reminderAt = ''; S.queue.opened = null; S.queue.phone = ''; S.waDraft = null; markFlow('save'); });
+    return 'skip';
+  },
+  qSkip: () => { const cur = S.queue.items.find((i) => i.state === 'Pending'); cur.state = 'Skipped'; S.queue.opened = null; S.queue.phone = ''; S.waDraft = null; },
+  pauseQueue: () => { S.pausedQueue = S.queue; S.queue = null; S.waDraft = null; S.toast = { kind: 'info', text: 'Paused. Tap “Resume follow-up session” in Reminders to continue.', auto: true }; setTimeout(() => { if (S.toast && S.toast.auto) { S.toast = null; render(); } }, 2500); },
+  endQueue: () => { S.queue = null; S.pausedQueue = null; S.waDraft = null; },
+};
+// Only reachable when the chat's number is visible (see linkPick).
+function linkModal(r, candId) {
+  const c = cand(candId);
+  const where = r.phone === c.phone ? '(same as Primary Phone)' : c.alt ? `as <b>Alternate Phone</b> (replaces ${esc(c.alt)})` : 'as <b>Alternate Phone</b>';
+  S.modal = { html: `<h4>Link this chat to ${esc(c.name)}?</h4>
+    <dl class="kv"><dt>Chat</dt><dd>${esc(r.title)}</dd><dt>Candidate</dt><dd>${esc(c.name)} · ${esc(c.role)}</dd></dl>
+    <p class="note">The number ${esc(r.phone)} will be saved ${where} in the Sheet.</p>
+    <div class="actions"><button class="btn primary" data-act="confirmLink" data-chat="${r.id}" data-id="${c.id}">Link &amp; save to Sheet</button><button class="btn" data-act="closeModal">Cancel</button></div>` };
+}
+// Resume a paused queue from Reminders
+const _start = ACT.startQueue;
+ACT.startQueue = () => { if (S.pausedQueue) { S.queue = S.pausedQueue; S.pausedQueue = null; markFlow('message'); return; } _start(); };
+
+/* ======================= Events ======================= */
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-tab],[data-act],[data-flow],#dReset');
+  if (!t) return;
+  if (t.id === 'dReset') { S = freshState(); return render(); }
+  if (t.dataset.flow) return jumpFlow(t.dataset.flow);
+  if (t.dataset.tab) { S.tab = t.dataset.tab; S.detailId = null; if (t.dataset.tab === 'reminders' || t.dataset.tab === 'inbox') { if (S.setupDone) markFlow('today'); } return render(); }
+  const fn = ACT[t.dataset.act];
+  if (fn && fn(t) !== 'skip') render();
+});
+document.addEventListener('input', (e) => {
+  const el = e.target;
+  if (el.id === 'pName') { S.profile.name = el.value; return softRender(el); }
+  if (el.id === 'pTitle') { S.profile.title = el.value; return softRender(el); }
+  if (el.id === 'sUrl') { S.sheetUrl = el.value; S.sheetTested = false; return softRender(el); }
+  if (el.id === 'cSearch') { S.search = el.value; return softRender(el); }
+  if (el.id === 'mFree') { S.composer.free = el.value; return softRender(el); }
+  if (el.id === 'mPlace') { S.composer.iPlace = el.value; return softRender(el); }
+  if (el.dataset.altInput) { S.inbox.find((r) => r.id === el.dataset.altInput).altDraft = el.value; return softRender(el); }
+  if (el.dataset.linkInput) { S.inbox.find((r) => r.id === el.dataset.linkInput).linkQuery = el.value; return softRender(el); }
+});
+document.addEventListener('change', (e) => {
+  const el = e.target;
+  if (el.id === 'dErr') S.simulateError = el.checked;
+  else if (el.id === 'dEmpty') S.emptyPreview = el.checked;
+  else if (el.id === 'cRole') S.roleFilter = el.selectedIndex === 0 ? 'All' : ROLES[el.selectedIndex - 1];
+  else if (el.id === 'cDel') S.showDeleted = el.checked;
+  else if (el.id === 'optNotif') S.notifications = el.checked;
+  else if (el.id === 'optTime') S.notifyTime = el.value;
+  else if (el.id === 'optAi') S.ai = el.checked;
+  else if (el.id === 'mType') { S.composer.type = el.value; markFlow('message'); }
+  else if (el.id === 'mTpl') S.composer.tplId = el.value;
+  else if (el.id === 'qType') S.queue.type = el.value;
+  else if (el.id === 'mDate') S.composer.iDate = el.value;
+  else if (el.id === 'mTime') S.composer.iTime = el.value;
+  else if (el.name === 'mPhone') S.composer.phone = el.value;
+  else if (el.name === 'qPhone') S.queue.phone = el.value;
+  else if (el.dataset.stage) { const c = cand(el.dataset.stage); const v = el.value; saveToSheet('stage', () => { c.stage = v; }); return; }
+  else if (el.dataset.remCustom) {
+    const r = S.inbox.find((x) => x.id === el.dataset.remCustom); const c = cand(r.candidateId); const at = el.value.replace('T', ' ');
+    if (at) saveToSheet('reminder', () => { c.reminderAt = at; r.remOpen = false; });
+    return;
+  } else return;
+  render();
+});
+/* Re-render but keep focus + caret in the field being typed into. */
+function softRender(el) {
+  const key = el.id ? '#' + el.id : el.dataset.linkInput ? `[data-link-input="${el.dataset.linkInput}"]`
+    : el.dataset.altInput ? `[data-alt-input="${el.dataset.altInput}"]` : null;
+  const pos = el.selectionStart;
+  render();
+  const again = key && $(key);
+  if (again) { again.focus(); try { again.setSelectionRange(pos, pos); } catch (_) {} }
+}
+function jumpFlow(key) {
+  S.tourStep = -1; S.modal = null; S.queue = null;
+  if (key !== 'setup' && !S.setupDone) {
+    S.profile = { name: S.profile.name || 'Lathisya', title: S.profile.title || 'HR Recruiter' };
+    S.sheetUrl = S.sheetUrl || 'https://docs.google.com/spreadsheets/d/SAMPLE-TEAM-SHEET/edit'; S.sheetTested = true; S.setupDone = true; markFlow('setup');
+  }
+  if (key === 'setup') { S.tab = 'settings'; S.composer = null; }
+  if (key === 'today') { S.tab = 'reminders'; S.composer = null; S.detailId = null; markFlow('today'); }
+  if (key === 'open') { S.tab = 'candidates'; S.composer = null; S.detailId = null; markFlow('today'); }
+  if (key === 'message') { S.tab = 'candidates'; S.detailId = 'PM-004'; S.composer = null; markFlow('open'); }
+  if (key === 'wa') { S.tab = 'candidates'; S.detailId = 'PM-004'; openComposer('PM-004', 'assessment'); markFlow('message'); }
+  if (key === 'save') { S.tab = 'candidates'; S.detailId = 'PM-004'; openComposer('PM-004', 'assessment'); S.composer.phone = '0813-2200-1144'; ACT.openDraft(); }
+  render();
+}
+
+function render() {
+  const view = `${S.tab}|${S.detailId}|${!!S.composer}|${!!S.queue}`;
+  const keep = view === render.lastView ? [...document.querySelectorAll('#side main')].map((m) => m.scrollTop) : [];
+  renderDemo(); renderWA(); renderSide();
+  document.querySelectorAll('#side main').forEach((m, i) => { if (keep[i]) m.scrollTop = keep[i]; });
+  render.lastView = view;
+  document.querySelectorAll('.tour-ring').forEach((n) => n.classList.remove('tour-ring'));
+  if (S.tourStep >= 0) { const t = $('#tab-' + TOUR[S.tourStep].tab); if (t) t.classList.add('tour-ring'); }
+}
+render();
+</script>
+</body>
+</html>
