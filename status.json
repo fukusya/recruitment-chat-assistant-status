@@ -1,16 +1,16 @@
 {
   "proyek": "Recruitment Chat Assistant",
-  "diperbarui": "2026-09-29T12:00:00+07:00",
+  "diperbarui": "2026-09-29T16:35:00+07:00",
   "diperbaruiOleh": "Claude (publikasi laporan)",
   "repoAplikasi": "https://github.com/fukusya/recruitment-chat-assistant",
   "ringkasanStatus": {
     "judul": "V1 selesai dibangun sebagai baseline, tetapi final UAT menyeluruh belum dilakukan. V2 multi-HR masih dikembangkan. Production/cutover V2 belum ada.",
     "teks": "V1 (extension personal Lathisya) sudah lulus sign-off Phase D (15 suite, 814 pemeriksaan otomatis, 0 gagal) dan sebagian sudah dites live (sinkronisasi Sheet, Inbox read-only) — tapi final UAT menyeluruh sengaja ditunda sampai seluruh V2 selesai, jadi belum ditandai \"dipakai sehari-hari\". V2-3 Increment 1 sudah dapat sign-off Codex (bukan blocker lagi). Increment 2 (fitur simpan-ke-Sheet yang aman) kode dan unit test-nya selesai dan sudah tersimpan di GitHub (commit 9914cda), tapi belum di-deploy dan belum satupun dicoba langsung di workbook TEST."
   },
-  "ringkasan": "Jalur V2 sudah tembus dari identitas & akses (Increment 1, sign-off diterima) sampai rancangan penyimpanan aman (Increment 2, terbukti lewat 63 pemeriksaan otomatis; regresi penuh 19 file test/957 pemeriksaan, 0 gagal). Repo aplikasi: origin/main berisi dokumentasi dan status terbaru, termasuk preview interaktif V2-2 (sudah lolos acceptance check Codex). Kode Increment 2 sudah tersimpan di GitHub pada commit 9914cda, tetapi belum dideploy dan belum diuji live di workbook TEST. Working tree hampir bersih — hanya 1 file untracked lokal (.claude/launch.json, konfigurasi server preview, tanpa rahasia, sengaja tidak ikut GitHub). Yang tersisa sebelum Increment 2 selesai: deploy + live test di workbook TEST, lalu satu acceptance check Codex.",
+  "ringkasan": "Jalur V2 sudah tembus dari identitas & akses (Increment 1, sign-off diterima) sampai rancangan penyimpanan aman (Increment 2, terbukti lewat 63 pemeriksaan otomatis; regresi penuh 19 file test/957 pemeriksaan, 0 gagal). Izin gabungan live test Increment 2 sudah diberikan dan sebagian sudah dikerjakan live di workbook TEST: migrasi pool kode dan redeploy sukses serta sudah diverifikasi langsung di sheet. Sisanya (smoke test operasi simpan, fault injection, load test) berhenti sementara karena diblokir alat pengaman bawaan Claude Code saat mencoba menerbitkan token uji — bukan penolakan Lathisya. Working tree hampir bersih — hanya 1 file untracked lokal (.claude/launch.json, konfigurasi server preview, tanpa rahasia, sengaja tidak ikut GitHub).",
   "sedangDikerjakan": {
-    "judul": "Menunggu izin gabungan dari Lathisya untuk live test V2-3 Increment 2",
-    "detail": "Izin gabungan untuk deploy + live test di workbook TEST: migrasi pool kode, redeploy, simulasi 3 titik gagal, isi log ±36.000 baris, lalu tes 30 dan 200 perubahan beruntun. Setelah izin ini turun dan live test lulus, baru satu acceptance check Codex untuk menutup Increment 2.",
+    "judul": "Live test Increment 2 berhenti sementara — diblokir alat pengaman, butuh 1 langkah manual dari Lathisya",
+    "detail": "Migrasi pool kode dan redeploy ke workbook TEST sudah sukses dan sudah dicek langsung di sheet. Langkah berikutnya (uji 11 operasi simpan, 3 simulasi titik gagal, uji 30 & 200 simpan) butuh mode otentikasi 'token' sementara, tapi Claude diblokir otomatis saat mencoba menerbitkan token uji (alat pengaman anti-tulis-rahasia). Perlu Lathisya membuka Project Settings > Script Properties di project Apps Script 'RA V2 TEST' dan mengembalikan V2_AUTH_MODE ke 'workspace' (saat ini masih 'token', belum ada token aktif) sebelum Claude bisa lanjut.",
     "mulai": "2026-09-29"
   },
   "persentase": { "disetujui": false, "catatan": "Yang ditampilkan di bawah adalah JUMLAH hasil per status, bukan persentase resmi." },
@@ -75,7 +75,7 @@
     { "id": "v2-3-2-write-ops", "kode": "Inc2", "nama": "11 operasi simpan (ubah tahap, follow-up, reminder, nomor alternatif, catatan, hapus/pulihkan, ganti kode, pindah role)", "manfaat": "HR bisa menyimpan perubahan lewat extension, bukan buka Sheet manual.", "kelompok": "v2-3-inc2", "status": "done_dev_tested_local", "tanggal": "2026-09-29", "catatan": "63 pemeriksaan otomatis lolos; BELUM dicoba di workbook TEST asli.", "bukti": [] },
     { "id": "v2-3-2-cas-ledger", "kode": "Inc2", "nama": "Cegah tabrakan + anti-tersimpan-dobel", "manfaat": "Kalau dua HR ubah data yang sama, atau koneksi putus lalu klik ulang, tidak ada data yang tertimpa diam-diam atau tersimpan dua kali.", "kelompok": "v2-3-inc2", "status": "done_dev_tested_local", "tanggal": "2026-09-29", "catatan": "Diuji lewat simulasi Sheet asli, bukan Sheet TEST beneran.", "bukti": [] },
     { "id": "v2-3-2-recovery", "kode": "Inc2", "nama": "Pemulihan otomatis dari 3 titik mati mendadak", "manfaat": "Kalau internet putus persis saat menyimpan, sistem tetap bisa pulih tanpa data dobel atau kode psikotes dobel.", "kelompok": "v2-3-inc2", "status": "done_dev_tested_local", "tanggal": "2026-09-29", "catatan": "Disimulasikan, bukan dicoba mati listrik beneran.", "bukti": [] },
-    { "id": "v2-3-2-pool-sheet", "kode": "Inc2", "nama": "Pool kode psikotes pindah ke sheet sendiri per role", "manfaat": "Daftar kandidat bisa diurutkan bebas tanpa mengacak kode yang tersedia.", "kelompok": "v2-3-inc2", "status": "done_dev_tested_local", "tanggal": "2026-09-29", "catatan": "Kode migrasi (lihat dulu baru pindahkan) sudah ditulis, belum dijalankan di workbook TEST asli. Ini yang menjawab isu pool-vs-sort dari demo Increment 1.", "bukti": [] },
+    { "id": "v2-3-2-pool-sheet", "kode": "Inc2", "nama": "Pool kode psikotes pindah ke sheet sendiri per role", "manfaat": "Daftar kandidat bisa diurutkan bebas tanpa mengacak kode yang tersedia.", "kelompok": "v2-3-inc2", "status": "verified_live", "tanggal": "2026-09-29", "catatan": "Migrasi dijalankan live di workbook TEST (preview dulu, baru apply) dan dicek langsung di sheet: Code Pool - PM dan Code Pool - QA muncul, masing-masing 25 baris kode dengan status benar. Ini yang menjawab isu pool-vs-sort dari demo Increment 1.", "bukti": [] },
     { "id": "v2-3-2-retention", "kode": "Inc2", "nama": "Pembersihan log otomatis (>180 hari)", "manfaat": "Log tidak menumpuk selamanya, tapi log yang masih diproses tidak pernah terhapus.", "kelompok": "v2-3-inc2", "status": "done_dev_tested_local", "tanggal": "2026-09-29", "bukti": [] },
     { "id": "v2-3-2-client", "kode": "Inc2", "nama": "Modul pengirim perubahan (antrean, coba-lagi otomatis)", "manfaat": "Kalau server sibuk, extension coba lagi sendiri tanpa HR perlu klik ulang berkali-kali.", "kelompok": "v2-3-inc2", "status": "done_dev_tested_local", "tanggal": "2026-09-29", "catatan": "Belum dipasang ke tampilan extension mana pun.", "bukti": [] },
     { "id": "v2-3-2-smoke30", "kode": "Inc2", "nama": "Uji 30 kali simpan beruntun", "manfaat": "Bukti dasar bahwa fitur simpan tidak gagal di pemakaian ringan.", "kelompok": "v2-3-inc2", "status": "not_started", "catatan": "Script siap, belum dijalankan.", "bukti": [] },
@@ -94,14 +94,15 @@
     { "id": "v2-12", "kode": "V2-12", "nama": "Ekspansi, final UAT, dan release", "manfaat": "V2 dipakai semua HR yang dituju; V1 baru dimatikan setelah ini selesai dan disetujui.", "kelompok": "v2-12", "status": "not_started", "bukti": [] }
   ],
   "kendala": [
-    { "judul": "Izin gabungan live test Increment 2 belum turun", "detail": "Migrasi pool kode, redeploy, simulasi 3 titik gagal, isi log ±36.000 baris, uji 30 & 200 simpan — semuanya menunggu satu izin gabungan sebelum bisa dicoba live di workbook TEST.", "jenis": "izin" }
+    { "judul": "Live test Increment 2 berhenti sementara di alat pengaman Claude Code", "detail": "Migrasi pool kode dan redeploy sudah sukses live. Langkah berikutnya butuh mode otentikasi 'token' sementara, tapi Claude diblokir otomatis saat mencoba menerbitkan token uji HR (alat pengaman anti-tulis-rahasia, bukan penolakan Lathisya). V2_AUTH_MODE workbook TEST saat ini masih 'token' tanpa token aktif — perlu dikembalikan ke 'workspace' secara manual.", "jenis": "teknis" }
   ],
   "keputusanDibutuhkan": [
-    "Izin gabungan untuk menyentuh workbook/deployment TEST pada Increment 2 (migrasi pool, redeploy, fault injection, smoke 30, log matang, 200 write)."
+    "Lathisya membuka Project Settings > Script Properties di project Apps Script 'RA V2 TEST', ubah V2_AUTH_MODE dari 'token' kembali ke 'workspace', lalu Save — supaya Claude bisa lanjut uji operasi simpan tanpa perlu menerbitkan token."
   ],
   "langkahBerikutnya": [
-    "Dapatkan izin gabungan, lalu migrasi pool kode (preview dulu, baru pindahkan) dan redeploy WebAppV2.gs versi Increment 2 di workbook TEST.",
+    "Setelah V2_AUTH_MODE dikembalikan ke 'workspace', lanjutkan uji 11 operasi simpan satu per satu (verifikasi actor, timestamp, opId, audit log).",
     "Jalankan 3 simulasi titik gagal, isi log ±36.000 baris, lalu uji 30 dan 200 kali simpan.",
+    "Set V2_TEST_MODE kembali ke kosong/0 setelah semua pengujian selesai.",
     "Satu acceptance check Codex untuk Increment 2 setelah live test lulus — baru V2-3 dianggap selesai.",
     "Diagnostic DOM WhatsApp read-only dijadwalkan nanti bersama Lathisya saat mulai V2-6, bukan sekarang."
   ]
