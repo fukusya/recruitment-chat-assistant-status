@@ -93,6 +93,10 @@ details.mod summary::-webkit-details-marker { display: none; }
 .gallery figcaption { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
 .section { margin: 26px 0 0; }
 .legend { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; }
+.btn-preview { display: inline-block; font-weight: 650; font-size: 14px; color: #fff; background: var(--accent); padding: 8px 16px; border-radius: 999px; text-decoration: none; }
+.btn-preview:hover { opacity: .9; }
+.preview-link { display: inline-block; margin-top: 4px; font-size: 12.5px; color: var(--accent); text-decoration: none; font-weight: 600; }
+.preview-link:hover { text-decoration: underline; }
 footer { margin-top: 36px; font-size: 12.5px; color: var(--faint); border-top: 1px solid var(--line); padding-top: 14px; }
 dialog { border: none; padding: 0; max-width: 96vw; max-height: 92vh; background: transparent; }
 dialog img { max-width: 96vw; max-height: 88vh; border-radius: 10px; display: block; }
@@ -199,7 +203,9 @@ if (hoursOld > 336) { $("stale").style.display = "block"; $("stale").textContent
 $("release").innerHTML = `<b>${esc(S.ringkasanStatus.judul)}</b><br>${esc(S.ringkasanStatus.teks)}`;
 $("ringkasan").textContent = S.ringkasan;
 if (S.yangBisaDitunjukkan && S.yangBisaDitunjukkan.length) {
-  $("bisa-tunjuk-wrap").innerHTML = `<h2>✅ Yang bisa ditunjukkan sekarang</h2><ul class="clean">${S.yangBisaDitunjukkan.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`;
+  $("bisa-tunjuk-wrap").innerHTML = `<h2>✅ Yang bisa ditunjukkan sekarang</h2><ul class="clean">${S.yangBisaDitunjukkan.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+    <p style="margin:12px 0 0"><a class="btn-preview" href="./preview/v2-2/" target="_blank" rel="noopener">▶ Buka preview interaktif V2</a></p>
+    <p class="sub" style="margin:6px 0 0">Bisa diklik-klik langsung di browser (data contoh, bukan extension final) — bukan cuma screenshot diam.</p>`;
 } else {
   $("bisa-tunjuk-wrap").style.display = "none";
 }
@@ -256,7 +262,7 @@ renderMods();
 const defs = S.statusDefinisi || {};
 $("legend").innerHTML = Object.keys(defs).map((k) => `<span><b>${esc(LABEL[k])}</b> = ${esc(defs[k])}</span>`).join("");
 
-const shots = H.flatMap((h) => (h.bukti || []).map((b) => `<figure><img src="${esc(b.file)}" alt="${esc(b.ket)}" loading="lazy"><figcaption><b>${esc(h.kode)}</b> · ${esc(b.ket)}</figcaption></figure>`));
+const shots = H.flatMap((h) => (h.bukti || []).map((b) => `<figure><img src="${esc(b.file)}" alt="${esc(b.ket)}" loading="lazy"><figcaption><b>${esc(h.kode)}</b> · ${esc(b.ket)}${h.id === "v2-2-wireframe" ? '<br><a class="preview-link" href="./preview/v2-2/" target="_blank" rel="noopener">▶ Coba preview interaktif</a>' : ""}</figcaption></figure>`));
 $("gallery").innerHTML = shots.join("") || '<p class="sub">Belum ada screenshot yang ditambahkan.</p>';
 document.addEventListener("click", (e) => {
   const img = e.target.closest("img"); if (!img || img.closest("dialog")) { if (e.target.closest("dialog")) $("zoom").close(); return; }
