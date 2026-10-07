@@ -129,6 +129,7 @@ dialog::backdrop { background: rgba(0,0,0,.7); }
 
   <div class="card" id="bisa-tunjuk-wrap" style="margin-bottom:18px"></div>
 
+  <div class="card" id="roadmap-progress" style="margin-bottom:18px"></div>
   <div class="grid3" id="kpi-wrap"></div>
   <p class="pct-note" id="pct"></p>
 
@@ -220,7 +221,12 @@ const kpiHtml = S.kpi.map((k) => {
   return `<div class="card kpi"><div class="label">${esc(k.label)}</div><div class="num">${done(items)} <small>/ ${items.length} hasil</small></div><div class="note">hasil terbukti live atau dipakai sehari-hari</div><div class="dots">${dotsHtml(items)}</div></div>`;
 }).join("") + `<div class="card kpi"><div class="label">Perlu keputusan</div><div class="num">${S.keputusanDibutuhkan.length}</div><div class="note">keputusan dari Lathisya yang ditunggu</div></div>`;
 $("kpi-wrap").innerHTML = kpiHtml;
-$("pct").textContent = S.persentase.disetujui ? "" : S.persentase.catatan;
+const target = S.kpi.find((k) => k.id === "v2-lengkap");
+const targetItems = target ? H.filter((h) => target.kelompok.includes(h.kelompok)) : [];
+const verifiedCount = done(targetItems);
+const verifiedPct = targetItems.length ? Math.round(100 * verifiedCount / targetItems.length) : 0;
+$("roadmap-progress").innerHTML = `<h2>Progres keseluruhan target V2</h2><div style="font-size:32px;font-weight:750">${verifiedPct}% hasil tervalidasi</div><progress value="${verifiedCount}" max="${targetItems.length || 1}" style="width:100%;height:18px" aria-label="Hasil V2 tervalidasi"></progress><p class="sub">${verifiedCount} dari ${targetItems.length} hasil sudah terbukti live atau dirilis. Dihitung otomatis dari daftar hasil pada setiap pembaruan.</p><p class="sub">${esc(S.persentase.catatan)}</p>`;
+$("pct").textContent = "Persentase hasil memakai bobot sama; bukan estimasi waktu pengerjaan atau kesiapan produk untuk digunakan semua HR.";
 
 $("now-t").textContent = S.sedangDikerjakan.judul;
 $("now-d").textContent = S.sedangDikerjakan.detail + (S.sedangDikerjakan.mulai ? ` (mulai ${weekLabel(new Date(S.sedangDikerjakan.mulai))} — masih berjalan, belum ada tanggal selesai)` : "");

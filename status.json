@@ -13,7 +13,7 @@
     "detail": "Backend penyimpanan aman terbukti live di workbook TEST dan kondisi TEST sudah dipulihkan. Semua kode sudah di GitHub. Sisa: satu acceptance check Codex; V2-4 baru dimulai setelah diterima. Uji retensi log live dicatat sebagai pekerjaan sebelum pilot.",
     "mulai": "2026-09-29"
   },
-  "persentase": { "disetujui": false, "catatan": "Yang ditampilkan di bawah adalah JUMLAH hasil per status, bukan persentase resmi." },
+  "persentase": { "disetujui": true, "catatan": "Roadmap terdiri dari 12 fase V2. Pekerjaan mendekati akhir fase 3 dari 12 (sekitar 25% jika setiap fase diberi bobot sama); acceptance V2-3 masih menunggu. V2-1 memiliki diagnostic yang dijadwalkan di V2-6. V2-4 sampai V2-12 belum dibangun. Hasil tervalidasi memuat banyak pemeriksaan fondasi dan bukan persentase produk siap pakai." },
   "yangBisaDitunjukkan": [
     "Baseline extension (V1) sudah dibangun dan lulus sign-off pengujian otomatis.",
     "Alur produk baru V2 (4 area: Inbox, Reminders, Candidates, Message Builder) sudah disetujui lewat wireframe — sekarang bisa dicoba langsung (klik-klik) lewat preview interaktif, bukan cuma screenshot.",
