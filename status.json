@@ -1,16 +1,16 @@
 {
   "proyek": "Recruitment Chat Assistant",
-  "diperbarui": "2026-10-07T19:00:00+07:00",
+  "diperbarui": "2026-10-07T20:30:00+07:00",
   "diperbaruiOleh": "Claude (live validation Increment 2, Tahap 2)",
   "repoAplikasi": "https://github.com/fukusya/recruitment-chat-assistant",
   "ringkasanStatus": {
     "judul": "V1 selesai dibangun sebagai baseline, tetapi final UAT menyeluruh belum dilakukan. V2 multi-HR masih dikembangkan. Production/cutover V2 belum ada.",
-    "teks": "V1 (extension personal Lathisya) sudah lulus sign-off Phase D (15 suite, 814 pemeriksaan otomatis, 0 gagal) dan sebagian sudah dites live (sinkronisasi Sheet, Inbox read-only) — tapi final UAT menyeluruh sengaja ditunda sampai seluruh V2 selesai, jadi belum ditandai \"dipakai sehari-hari\". V2-3 Increment 1 sudah dapat sign-off Codex. Increment 2 terbukti live di workbook TEST: 11 operasi simpan, replay, CAS, authorization, 3 titik crash, smoke 30, log 36.000 baris, dan load 200 (200/200 sukses, 0 duplikat). Verdict sementara CONDITIONAL PASS: retensi log belum dites live dan masih menunggu acceptance Codex."
+    "teks": "V1 (extension personal Lathisya) sudah lulus sign-off Phase D (15 suite, 814 pemeriksaan otomatis, 0 gagal) dan sebagian sudah dites live (sinkronisasi Sheet, Inbox read-only) — tapi final UAT menyeluruh sengaja ditunda sampai seluruh V2 selesai, jadi belum ditandai \"dipakai sehari-hari\". V2-3 Increment 1 sudah dapat sign-off Codex. BACKEND V2 (penyimpanan aman ke Sheet) terbukti live di workbook TEST (Increment 2: 200/200 simpan sukses, 0 duplikat). TAMPILAN extension V2 belum dibuat (V2-4 dan seterusnya). Increment 2 menunggu satu acceptance check Codex; uji retensi log live dicatat sebagai pekerjaan sebelum pilot."
   },
-  "ringkasan": "Increment 2 (simpan aman ke Sheet) lulus live validation di workbook TEST (7 Okt): semua operasi simpan benar, kirim ulang tidak menulis dobel, role lain ditolak, 3 skenario putus mendadak pulih tanpa data/kode dobel, smoke 30 dan load 200 (3 bersamaan, log 36.000 baris) 100% sukses dengan 0 duplikat dan 0 PENDING. Satu simpan butuh sekitar 4-15 detik, jadi tampilan extension nanti harus menunjukkan status menyimpan. Satu cacat pemulihan yang ditemukan live sudah diperbaiki dan ter-deploy (Version 4). Belum: retensi log live, acceptance Codex, dan pemasangan ke extension (V2-4/V2-5). Production dan V1 tidak disentuh.",
+  "ringkasan": "BACKEND V2 terbukti, TAMPILAN belum. Increment 2 (simpan aman ke Sheet) lulus live validation di workbook TEST (7 Okt): semua operasi simpan benar, kirim ulang tidak menulis dobel, role lain ditolak, 3 skenario putus mendadak pulih tanpa data/kode dobel, smoke 30 dan load 200 (3 bersamaan, log 36.000 baris) 100% sukses dengan 0 duplikat dan 0 PENDING. Satu simpan butuh sekitar 4-15 detik, jadi tampilan extension nanti harus menunjukkan status menyimpan. Satu cacat pemulihan yang ditemukan live sudah diperbaiki, ter-deploy (Version 4), dan semua kode sudah di GitHub. Tampilan extension V2 belum dibuat (yang bisa dicoba hanya preview wireframe). Retensi log live dicatat sebagai pekerjaan sebelum pilot dan tidak menahan acceptance. Production dan V1 tidak disentuh.",
   "sedangDikerjakan": {
-    "judul": "Increment 2 selesai diuji live (CONDITIONAL PASS); menunggu acceptance check Codex",
-    "detail": "Semua uji live lulus dan kondisi TEST sudah dipulihkan (kandidat kembali ke snapshot, log sintetis dibersihkan, V2_TEST_MODE dihapus, V2_FAULT_INJECT kosong). Sisa: satu acceptance check Codex, push perbaikan kecil cleanup (commit lokal), dan uji retensi live bila dianggap perlu. V2-4 belum dimulai.",
+    "judul": "Increment 2 selesai diuji live; menunggu satu acceptance check Codex",
+    "detail": "Backend penyimpanan aman terbukti live di workbook TEST dan kondisi TEST sudah dipulihkan. Semua kode sudah di GitHub. Sisa: satu acceptance check Codex; V2-4 baru dimulai setelah diterima. Uji retensi log live dicatat sebagai pekerjaan sebelum pilot.",
     "mulai": "2026-09-29"
   },
   "persentase": { "disetujui": false, "catatan": "Yang ditampilkan di bawah adalah JUMLAH hasil per status, bukan persentase resmi." },
@@ -19,7 +19,8 @@
     "Alur produk baru V2 (4 area: Inbox, Reminders, Candidates, Message Builder) sudah disetujui lewat wireframe — sekarang bisa dicoba langsung (klik-klik) lewat preview interaktif, bukan cuma screenshot.",
     "Login multi-HR dan pembagian role per HR sudah terbukti live di workbook TEST (Increment 1).",
     "ID kandidat yang stabil dan perlindungan data teknis sudah terbukti live di workbook TEST (Increment 1).",
-    "Fitur simpan-ke-Sheet yang aman (Increment 2) masih menunggu live test — belum boleh diklaim selesai."
+    "BACKEND V2 (simpan aman ke Sheet) terbukti live di workbook TEST: 11 jenis simpan, kirim ulang tidak dobel, role lain ditolak, 3 skenario putus mendadak pulih, 30 dan 200 simpan sukses tanpa duplikat. Ini bisa ditunjukkan lewat Sheet TEST dan laporan, bukan lewat tampilan extension.",
+    "TAMPILAN extension V2 BELUM ada: yang bisa diklik hanya preview wireframe (data contoh). Menyambungkan backend ke tampilan adalah V2-4 dan seterusnya."
   ],
   "kpi": [
     { "id": "v1", "label": "Baseline V1", "kelompok": ["v1"] },
@@ -54,7 +55,7 @@
     { "id": "v2-1-pool-structure", "kode": "V2-1", "nama": "Struktur code pool 2 role nyata", "manfaat": "Kolom dan format pool kode PM & QA distandarkan.", "kelompok": "v2-1", "status": "verified_live", "tanggal": "2026-09-27", "catatan": "Cocok 100% dengan rencana.", "bukti": [] },
     { "id": "v2-1-auth-extension", "kode": "V2-1", "nama": "Auth Google Workspace dari extension asli", "manfaat": "HR dikenali dari akun Google-nya, bukan token yang bisa bocor.", "kelompok": "v2-1", "status": "verified_live", "tanggal": "2026-09-29", "catatan": "Terjawab lewat probe V2-3 Increment 1 (dua akun 10/10) tanggal 29 Sep, bukan lewat pengujian V2-1 sendiri.", "bukti": [] },
     { "id": "v2-1-whatsapp-diagnostic", "kode": "V2-1", "nama": "Diagnostic DOM WhatsApp read-only", "manfaat": "Tahu nomor/JID mana yang bisa diandalkan untuk mencocokkan chat ke kandidat.", "kelompok": "v2-1", "status": "not_started", "catatan": "Script sudah siap. Dijadwalkan bersama Lathisya saat mulai masuk gate V2-6 (Inbox matching) — bukan blocker untuk V2-3.", "bukti": [] },
-    { "id": "v2-1-volume-200", "kode": "V2-1", "nama": "Uji volume 200 write (draft awal)", "manfaat": "Membuktikan server tidak macet kalau dipakai banyak HR sekaligus.", "kelompok": "v2-1", "status": "in_progress", "tanggal": "2026-09-27", "catatan": "30 write kontinu + 15 alokasi berurutan terbukti; burst 8 aksi tidak andal. Digantikan uji 200 write versi Increment 2 yang lebih lengkap.", "bukti": [] },
+    { "id": "v2-1-volume-200", "kode": "V2-1", "nama": "Uji volume 200 write (draft awal)", "manfaat": "Membuktikan server tidak macet kalau dipakai banyak HR sekaligus.", "kelompok": "v2-1", "status": "verified_live", "tanggal": "2026-09-27", "catatan": "30 write kontinu + 15 alokasi berurutan terbukti; burst 8 aksi tidak andal. Digantikan dan dituntaskan oleh uji 200 write Increment 2 (200/200 sukses, 7 Okt).", "bukti": [] },
 
     { "id": "v2-2-wireframe", "kode": "V2-2", "nama": "Wireframe 4 tab + walkthrough HR baru", "manfaat": "Lathisya bisa membayangkan alur pakai sebelum kode ditulis, jadi revisi besar tidak terjadi belakangan.", "kelompok": "v2-2", "status": "verified_live", "tanggal": "2026-09-28", "catatan": "Dicoba di browser: alur 6 langkah, error/retry, queue, empty state, mobile 375px, dark mode, 0 console error. Disetujui Lathisya. Wireframe V2 yang sudah disetujui — belum runtime extension final; semua nama/nomor di screenshot adalah data contoh.", "bukti": [
       { "file": "assets/progress/v2-wireframe-inbox.jpg", "ket": "Wireframe V2 — tab Inbox: status Matched/Alternate number/Possible match (data contoh)" },
@@ -76,7 +77,7 @@
     { "id": "v2-3-2-cas-ledger", "kode": "Inc2", "nama": "Cegah tabrakan + anti-tersimpan-dobel", "manfaat": "Kalau dua HR ubah data yang sama, atau koneksi putus lalu klik ulang, tidak ada data yang tertimpa diam-diam atau tersimpan dua kali.", "kelompok": "v2-3-inc2", "status": "verified_live", "tanggal": "2026-10-07", "catatan": "Live di workbook TEST: replay opId sama hanya menulis sekali; opId sama dengan isi beda ditolak OP_ID_CONFLICT; CAS dengan nilai salah ditolak tanpa menulis; authorization role lain ditolak AUTH_FORBIDDEN (dengan kontrol bahwa kandidat memang ada). Satu balasan hilang setelah tulis berhasil juga terjadi alami dan teratasi dengan mengulang opId yang sama.", "bukti": [] },
     { "id": "v2-3-2-recovery", "kode": "Inc2", "nama": "Pemulihan otomatis dari 3 titik mati mendadak", "manfaat": "Kalau internet putus persis saat menyimpan, sistem tetap bisa pulih tanpa data dobel atau kode psikotes dobel.", "kelompok": "v2-3-inc2", "status": "verified_live", "tanggal": "2026-10-07", "catatan": "Ketiga titik (sebelum mutasi, di antara pool dan kandidat, setelah mutasi sebelum APPLIED) dipicu nyata di workbook TEST dan pulih dengan opId dan payload identik; tepat satu kode psikotes terambil. Live test menemukan cacat pada titik pertama (RECOVERY_UNCERTAIN untuk kandidat yang pernah ditulis); diperbaiki dan ter-deploy sebagai Version 4. Baris PENDING yang kalah urutan tidak bisa ditutup otomatis (fail-closed, perlu owner).", "bukti": [] },
     { "id": "v2-3-2-pool-sheet", "kode": "Inc2", "nama": "Pool kode psikotes pindah ke sheet sendiri per role", "manfaat": "Daftar kandidat bisa diurutkan bebas tanpa mengacak kode yang tersedia.", "kelompok": "v2-3-inc2", "status": "verified_live", "tanggal": "2026-09-29", "catatan": "Migrasi dijalankan live di workbook TEST (preview dulu, baru apply) dan dicek langsung di sheet: Code Pool - PM dan Code Pool - QA muncul, masing-masing 25 baris kode dengan status benar. Ini yang menjawab isu pool-vs-sort dari demo Increment 1.", "bukti": [] },
-    { "id": "v2-3-2-retention", "kode": "Inc2", "nama": "Pembersihan log otomatis (>180 hari)", "manfaat": "Log tidak menumpuk selamanya, tapi log yang masih diproses tidak pernah terhapus.", "kelompok": "v2-3-inc2", "status": "done_dev_tested_local", "tanggal": "2026-09-29", "catatan": "Teruji unit test saja. Belum dijalankan live di workbook TEST. Penghapusan baris kini per blok berurutan agar tidak melewati batas 6 menit.", "bukti": [] },
+    { "id": "v2-3-2-retention", "kode": "Inc2", "nama": "Pembersihan log otomatis (>180 hari)", "manfaat": "Log tidak menumpuk selamanya, tapi log yang masih diproses tidak pernah terhapus.", "kelompok": "v2-3-inc2", "status": "done_dev_tested_local", "tanggal": "2026-09-29", "catatan": "Teruji unit test saja. Belum dijalankan live di workbook TEST — dicatat sebagai pekerjaan sebelum pilot, tidak menahan acceptance V2-3. Penghapusan baris kini per blok berurutan agar tidak melewati batas 6 menit.", "bukti": [] },
     { "id": "v2-3-2-client", "kode": "Inc2", "nama": "Modul pengirim perubahan (antrean, coba-lagi otomatis)", "manfaat": "Kalau server sibuk, extension coba lagi sendiri tanpa HR perlu klik ulang berkali-kali.", "kelompok": "v2-3-inc2", "status": "done_dev_tested_local", "tanggal": "2026-09-29", "catatan": "Belum dipasang ke tampilan extension mana pun.", "bukti": [] },
     { "id": "v2-3-2-smoke30", "kode": "Inc2", "nama": "Uji 30 kali simpan beruntun", "manfaat": "Bukti dasar bahwa fitur simpan tidak gagal di pemakaian ringan.", "kelompok": "v2-3-inc2", "status": "verified_live", "tanggal": "2026-10-07", "catatan": "Live 7 Okt di workbook TEST: 30/30 sukses berurutan, 0 error, median 5,9 dtk, p95 8,4 dtk, total 184 dtk. Nilai akhir di Sheet sesuai.", "bukti": [] },
     { "id": "v2-3-2-mature-log", "kode": "Inc2", "nama": "Uji performa saat log sudah besar (±36.000 baris)", "manfaat": "Memastikan sistem tidak melambat setelah dipakai berbulan-bulan.", "kelompok": "v2-3-inc2", "status": "verified_live", "tanggal": "2026-10-07", "catatan": "Live: 36.000 baris log sintetis terisi 65 dtk; 200 simpan di atasnya tanpa error dan tanpa perlambatan terlihat (min 4,1 dtk). Log sintetis dibersihkan (36.000 baris dalam 4 dtk setelah perbaikan hapus per blok).", "bukti": [] },
@@ -94,16 +95,16 @@
     { "id": "v2-12", "kode": "V2-12", "nama": "Ekspansi, final UAT, dan release", "manfaat": "V2 dipakai semua HR yang dituju; V1 baru dimatikan setelah ini selesai dan disetujui.", "kelompok": "v2-12", "status": "not_started", "bukti": [] }
   ],
   "kendala": [
-    { "judul": "Retensi log belum dites live", "detail": "Job pembersihan log > 180 hari hanya teruji unit test; verdict Increment 2 CONDITIONAL PASS sampai ini dites atau diterima sebagai risiko kecil.", "jenis": "teknis" },
+    { "judul": "Pekerjaan sebelum pilot: uji retensi log live", "detail": "Job pembersihan log > 180 hari hanya teruji unit test. Dicatat sebagai pekerjaan sebelum pilot; tidak menahan acceptance V2-3.", "jenis": "teknis" },
     { "judul": "Satu simpan butuh 4-15 detik", "detail": "Karena write bergantian lewat lock, kapasitas sekitar 0,3 simpan per detik. Tampilan extension nanti harus menunjukkan status sedang menyimpan dan antrean.", "jenis": "teknis" }
   ],
   "keputusanDibutuhkan": [
-    "Izin push commit perbaikan cleanup per blok (commit hapus per blok) ke GitHub.",
-    "Putuskan: dites retensi live dulu, atau diterima sebagai risiko kecil lalu lanjut acceptance Codex."
+    "Tidak ada keputusan baru dari Lathisya; menunggu satu acceptance check Codex untuk Increment 2."
   ],
   "langkahBerikutnya": [
     "Satu acceptance check Codex untuk Increment 2 — baru V2-3 dianggap selesai.",
     "Setelah diterima: mulai V2-4 (fondasi extension dan navigasi V2); modul client dipasang ke tampilan dengan status menyimpan dan antrean.",
+    "Sebelum pilot: uji retensi log live.",
     "Diagnostic DOM WhatsApp read-only dijadwalkan nanti bersama Lathisya saat mulai V2-6, bukan sekarang."
   ]
 }
