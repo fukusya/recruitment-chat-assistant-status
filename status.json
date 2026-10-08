@@ -7,10 +7,10 @@
     "judul": "V1 selesai dibangun sebagai baseline, tetapi final UAT menyeluruh belum dilakukan. V2 multi-HR masih dikembangkan. Production/cutover V2 belum ada.",
     "teks": "V1 (extension personal Lathisya) sudah lulus sign-off Phase D (15 suite, 814 pemeriksaan otomatis, 0 gagal) dan sebagian sudah dites live — tapi final UAT menyeluruh sengaja ditunda sampai seluruh V2 selesai, jadi belum ditandai \"dipakai sehari-hari\". V2-3 (backend penyimpanan aman) dan V2-4 (tampilan V2: empat tab, onboarding, Help, profil, role, Candidates hanya-baca, cache aman) SELESAI dan diterima Codex; V2-4 terbukti di extension asli dengan login Workspace pada workbook TEST. Mengubah data kandidat dari extension (V2-5) belum dibuat; rencananya menunggu review. Uji retensi log live dicatat sebagai pekerjaan sebelum pilot."
   },
-  "ringkasan": "V2-4 selesai dan diterima Codex (8 Okt): sidebar V2 dengan empat tab, onboarding, Help, profil, role dari server, dan Candidates hanya-baca terbukti di extension asli dengan login Workspace (lencana TEST, akun dikenali, 3 kandidat TEST role QA). Cache aman: terikat akun yang diverifikasi server + koneksi, dibuang saat akses ditolak, balasan lama tidak bisa menimpa koneksi baru. Inbox/Reminders di V2 masih versi lama (V1). Belum ada tombol ubah data (V2-5: rencana menunggu review). Production dan V1 tidak disentuh.",
+  "ringkasan": "V2-4 selesai dan diterima Codex. V2-5 (edit kandidat dari extension) sudah dibuat dan lulus tes otomatis (23 file, 1190 pemeriksaan) serta klik di harness lokal: antrean simpan satu-owner lintas jendela, aksi tersimpan sebelum dikirim, akun dan koneksi diperiksa ulang sebelum tiap kirim, kedaluwarsa 24 jam, preview + konfirmasi ganti kode, buka WhatsApp lewat klik. Belum dites live dari extension asli dan belum dipush. Pool kode psikotes dipisah jadi V2-5b (wajib sebelum pilot). Production dan V1 tidak disentuh.",
   "sedangDikerjakan": {
-    "judul": "V2-4 selesai; rencana V2-5 menunggu review Codex",
-    "detail": "Rencana V2-5 (edit kandidat lewat operasi server yang sudah terbukti, status simpan jujur, konflik terlihat, buka WhatsApp dengan nomor yang dipilih) ada di IMPLEMENTATION_PLAN.md. Belum ada kode V2-5. UI pool kode psikotes diusulkan dipisah (V2-5b) karena butuh perubahan server. Uji retensi log live tetap pekerjaan sebelum pilot.",
+    "judul": "V2-5 kode selesai (lokal); live TEST kecil dari extension asli menunggu",
+    "detail": "Edit kandidat per bagian lewat antrean tulis satu-owner (Web Lock), pending tersimpan sebelum kirim, aktor dan koneksi diverifikasi ulang sebelum tiap kirim, kedaluwarsa 24 jam, preview + konfirmasi kode, buka WhatsApp lewat klik. Lulus tes otomatis dan klik di harness lokal. Belum dipush. Live TEST kecil dari extension asli belum dijalankan. Pool kode = V2-5b (butuh perubahan server).",
     "mulai": "2026-10-08"
   },
   "persentase": { "disetujui": true, "catatan": "Roadmap terdiri dari 12 fase V2. V2-1 sampai V2-4 selesai (4 dari 12 fase, sekitar 33% jika setiap fase diberi bobot sama); V2-3 dan V2-4 diterima Codex 8 Okt. V2-1 memiliki diagnostic yang dijadwalkan di V2-6. V2-5 sampai V2-12 belum dibangun. Hasil tervalidasi memuat banyak pemeriksaan fondasi dan bukan persentase produk siap pakai." },
@@ -86,7 +86,8 @@
     { "id": "v2-3-2-acceptance", "kode": "Inc2", "nama": "Acceptance Codex untuk Increment 2 (V2-3 selesai)", "manfaat": "V2-3 resmi selesai dan V2-4 boleh masuk penyusunan rencana.", "kelompok": "v2-3-inc2", "status": "verified_live", "tanggal": "2026-10-08", "catatan": "ACCEPT dengan catatan (8 Okt): tidak ada defect material; regresi penuh 20 file / 1010 pemeriksaan / 0 gagal. Catatan: retensi live sebelum pilot; client runtime belum terhubung ke extension.", "bukti": [] },
 
     { "id": "v2-4", "kode": "V2-4", "nama": "Fondasi extension dan navigasi V2", "manfaat": "Empat tab baru, onboarding, Help, dan Settings yang dipahami HR baru; V1 tetap bisa dipakai selama V2 dibangun.", "kelompok": "v2-4", "status": "verified_live", "tanggal": "2026-10-08", "catatan": "Selesai dan diterima Codex 8 Okt. 22 file / 1112 pemeriksaan / 0 gagal (termasuk 25 uji balapan koneksi). Live: sidebar asli + login Workspace menampilkan lencana TEST, akun dikenali, 3 kandidat TEST role QA (screenshot Lathisya, tidak dipublikasikan karena memuat email). Laporan: docs/phases/V2-4_REPORT.md", "bukti": [] },
-    { "id": "v2-5", "kode": "V2-5", "nama": "Candidates dan write-back di extension", "manfaat": "HR bisa lihat/cari/ubah data kandidat dari extension, bukan buka Sheet manual; soft delete/restore terlihat.", "kelompok": "v2-5", "status": "not_started", "catatan": "Rencana singkat ada di IMPLEMENTATION_PLAN.md, menunggu review Codex. Belum ada kode.", "bukti": [] },
+    { "id": "v2-5", "kode": "V2-5", "nama": "Candidates dan write-back di extension", "manfaat": "HR bisa lihat/cari/ubah data kandidat dari extension, bukan buka Sheet manual; soft delete/restore terlihat.", "kelompok": "v2-5", "status": "done_dev_tested_local", "tanggal": "2026-10-08", "catatan": "Kode selesai; 23 file / 1190 pemeriksaan lulus; diklik di harness lokal (backend palsu). Live TEST kecil dari extension asli belum dijalankan. Lihat docs/phases/V2-5_REPORT.md", "bukti": [] },
+    { "id": "v2-5b", "kode": "V2-5b", "nama": "Pengelolaan pool kode psikotes di extension", "manfaat": "PIC menambah/menghapus kode pool dan melihat sisa kode tanpa membuka Sheet mentah.", "kelompok": "v2-5", "status": "not_started", "catatan": "Dipisah dari V2-5; butuh operasi server baru + deploy Apps Script (butuh izin) dan uji ulang backend. Wajib sebelum pilot.", "bukti": [] },
     { "id": "v2-6", "kode": "V2-6", "nama": "Inbox matching dan reminder berbasis kandidat", "manfaat": "Chat WhatsApp otomatis tersambung ke kandidat yang benar; reminder pakai ID kandidat, bukan tebak-tebakan chat.", "kelompok": "v2-6", "status": "not_started", "catatan": "Diagnostic DOM WhatsApp read-only (dari V2-1) dijadwalkan di sini.", "bukti": [] },
     { "id": "v2-7", "kode": "V2-7", "nama": "Reminders dan psychotest code di extension", "manfaat": "Reminders jadi tampilan kandidat yang difilter; ganti kode psikotes lewat preview/konfirmasi di extension.", "kelompok": "v2-7", "status": "not_started", "bukti": [] },
     { "id": "v2-8", "kode": "V2-8", "nama": "Mode Follow-up Berurutan", "manfaat": "HR bisa proses follow-up kandidat satu-satu berurutan tanpa lupa siapa yang sudah/belum, tanpa auto-send.", "kelompok": "v2-8", "status": "not_started", "bukti": [] },
@@ -100,10 +101,11 @@
     { "judul": "Satu simpan butuh 4-15 detik", "detail": "Karena write bergantian lewat lock, kapasitas sekitar 0,3 simpan per detik. Tampilan extension nanti harus menunjukkan status sedang menyimpan dan antrean.", "jenis": "teknis" }
   ],
   "keputusanDibutuhkan": [
-    "Review Codex atas rencana V2-5 dan jawab 4 keputusan terbuka di IMPLEMENTATION_PLAN.md (terutama: pool kode psikotes dipisah ke V2-5b?)."
+    "Izin push kode V2-5 ke GitHub (commit lokal sudah ada; push butuh izin eksplisit)."
   ],
   "langkahBerikutnya": [
-    "Codex mereview rencana V2-5; setelah disetujui, implementasi dalam satu batch.",
+    "Live TEST kecil V2-5 dari extension asli dengan login Workspace (satu rangkaian klik Lathisya), lalu review Codex atas implementasi.",
+    "V2-5b (pool kode psikotes) wajib sebelum pilot; butuh perubahan server + izin deploy.",
     "Sebelum pilot: uji retensi log live.",
     "Diagnostic DOM WhatsApp read-only dijadwalkan nanti bersama Lathisya saat mulai V2-6, bukan sekarang."
   ]
